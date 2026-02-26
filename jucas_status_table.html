@@ -125,9 +125,9 @@ function loadData() {
           <td>${item.name || ""}</td>
           <td>${item.department || ""}</td>
           <td></td>
-          <td>${item.updateDate ? item.updateDate : "-"}</td>
+          <td>${item.updateDate || ""}</td>
         `;
-
+<!--
         // define status cell
         let statusCell = tr.children[4];
 
@@ -157,7 +157,7 @@ function loadData() {
             portal++;
           }
         }
-
+-->
         statusCell.appendChild(span);
 
         // FIX 2: append row
