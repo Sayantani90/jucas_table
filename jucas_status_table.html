@@ -127,38 +127,7 @@ function loadData() {
           <td></td>
           <td>${item.updateDate || ""}</td>
         `;
-<!--
-        // define status cell
-        let statusCell = tr.children[4];
 
-        let statusText = item.status ? item.status : "";
-
-        let span = document.createElement("span");
-        span.classList.add("status");
-
-        if (statusText.trim() === "") {
-          span.textContent = "Not Updated";
-          span.style.background = "#7f8c8d";
-        } else {
-          span.textContent = statusText;
-
-          let s = statusText.toLowerCase();
-
-          if (s.includes("ongoing")) {
-            span.classList.add("ongoing");
-            ongoing++;
-          }
-          else if (s.includes("processed") || s.includes("scrutinized")) {
-            span.classList.add("processed");
-            processed++;
-          }
-          else if (s.includes("portal")) {
-            span.classList.add("portal");
-            portal++;
-          }
-        }
--->
-        statusCell.appendChild(span);
 
         // FIX 2: append row
         tbody.appendChild(tr);
