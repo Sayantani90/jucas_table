@@ -207,23 +207,20 @@ function loadData() {
 
         total++;
 
-        const statusText = (item.status || "").trim();
-
-        switch (statusText) {
-
-          case "Ongoing":
-            ongoing++;
-            break;
-
-          case "Scrutinized":
-          case "Scrutinized (Portal Opened)":
-          case "Scrutinized (Portal Closed)":
-            scrutinizedGroup++;
-            break;
-
-          case "Scrutinized & Sent to Registrar":
-            sentToRegistrar++;
-            break;
+        const statusText = (item.status || "").trim().toLowerCase();
+        
+        if (statusText === "ongoing") {
+          ongoing++;
+        }
+        else if (
+          statusText === "scrutinized" ||
+          statusText === "scrutinized (portal opened)" ||
+          statusText === "scrutinized (portal closed)"
+        ) {
+          scrutinizedGroup++;
+        }
+        else if (statusText === "scrutinized & sent to registrar") {
+          sentToRegistrar++;
         }
 
         let tr = document.createElement("tr");
