@@ -196,31 +196,29 @@ function loadData() {
       const tbody = document.querySelector("#sheetTable tbody");
       tbody.innerHTML = "";
 
-      // Declare counters once
       let total = 0;
       let ongoing = 0;
       let scrutinizedGroup = 0;
       let sentToRegistrar = 0;
 
-      // Single loop only
       data.forEach(item => {
 
         total++;
 
-        const statusText = (item.status || "").trim().toLowerCase();
-        
-        if (statusText === "ongoing") {
+        const rawStatus = item.status || "";
+        const status = rawStatus.trim().toLowerCase();
+
+        // DEBUG — remove later
+        console.log("Status from sheet:", rawStatus);
+
+        if (status.includes("ongoing")) {
           ongoing++;
         }
-        else if (
-          statusText === "scrutinized" ||
-          statusText === "scrutinized (portal opened)" ||
-          statusText === "scrutinized (portal closed)"
-        ) {
-          scrutinizedGroup++;
-        }
-        else if (statusText === "scrutinized & sent to registrar") {
+        else if (status.includes("sent to registrar")) {
           sentToRegistrar++;
+        }
+        else if (status.includes("scrutinized")) {
+          scrutinizedGroup++;
         }
 
         let tr = document.createElement("tr");
