@@ -82,8 +82,6 @@ tr:hover {
       <th>Date Received</th>
       <th>Name</th>
       <th>Department</th>
-      <th>Document Type</th>
-      <th>Received From</th>
       <th>Status</th>
       <th>Date of Update</th>
     </tr>
@@ -126,14 +124,12 @@ function loadData() {
           <td>${item.dateReceived || ""}</td>
           <td>${item.name || ""}</td>
           <td>${item.department || ""}</td>
-          <td>${item.documentType || ""}</td>
-          <td>${item.receivedFrom || ""}</td>
           <td></td>
           <td>${item.updateDate ? item.updateDate : "-"}</td>
         `;
 
-        // FIX 1: define status cell
-        let statusCell = tr.children[6];
+        // define status cell
+        let statusCell = tr.children[4];
 
         let statusText = item.status ? item.status : "";
 
@@ -185,8 +181,8 @@ function loadData() {
 
 loadData();
 
-// Auto refresh every 60 seconds
-setInterval(loadData, 60000);
+// Auto refresh every 20 seconds
+setInterval(loadData, 20000);
 
 </script>
 
