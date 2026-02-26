@@ -115,22 +115,33 @@ function loadData() {
 
       data.forEach(item => {
 
-        total++;
-
-        let tr = document.createElement("tr");
-
-        tr.innerHTML = `
-          <td>${item.sl || ""}</td>
-          <td>${item.dateReceived || ""}</td>
-          <td>${item.name || ""}</td>
-          <td>${item.department || ""}</td>
-          <td>${item.status || ""}</td>
-          <td>${item.updateDate || ""}</td>
-        `;
-
-
-        // FIX 2: append row
-        tbody.appendChild(tr);
+          total++;
+        
+          let statusText = (item.status || "").toLowerCase().trim();
+        
+          // Count dynamically
+          if (statusText.includes("ongoing")) {
+            ongoing++;
+          } 
+          else if (statusText.includes("processed") || statusText.includes("sent")) {
+            processed++;
+          } 
+          else if (statusText.includes("portal")) {
+            portal++;
+          }
+        
+          let tr = document.createElement("tr");
+        
+          tr.innerHTML = `
+            <td>${item.sl || ""}</td>
+            <td>${item.dateReceived || ""}</td>
+            <td>${item.name || ""}</td>
+            <td>${item.department || ""}</td>
+            <td>${item.status || "-"}</td>
+            <td>${item.updateDate || "-"}</td>
+          `;
+        
+          tbody.appendChild(tr);
 
       });
 
