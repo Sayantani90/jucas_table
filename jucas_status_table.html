@@ -282,7 +282,7 @@
     </div>
 
     <div class="table-container">
-        <table class="official-table">
+        <table class="official-table" id="sheetTable">
             <thead>
                 <tr>
                     <th class="sl-no">Sl. No</th>
@@ -824,7 +824,24 @@
     </div>
 
     <script>
-    (function () {
+    fetch("https://script.google.com/macros/s/AKfycbw7mCH39jdlbJU4EMN3sArr-raQiuaS2-UndBT4xxiK7S2RcesnpWiE-xYaS5o-R9p-4g/exec")
+	  .then(response => response.json())
+	  .then(data => {
+	    let table = document.getElementById("sheetTable");
+	
+	    data.forEach(row => {
+	      let tr = document.createElement("tr");
+	      row.forEach(cell => {
+	        let td = document.createElement("td");
+	        td.textContent = cell;
+	        tr.appendChild(td);
+	      });
+	      table.appendChild(tr);
+	    });
+	  });
+		setInterval(loadData, 10000); // refresh every 10 seconds
+		
+		(function () {
         const table   = document.querySelector('.official-table');
         const tbody   = table.querySelector('tbody');
         const headers = table.querySelectorAll('thead th');
@@ -902,6 +919,7 @@
         statusFilter.addEventListener('change', filterRows);
         updateCount();
     })();
+	
     </script>
 </body>
 </html>
