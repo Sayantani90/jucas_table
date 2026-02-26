@@ -99,62 +99,109 @@ tr:hover {
 
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzcb3SnesxhcJmVt82IS6yiBxt_JFfAc5Sx0_p1pqcyAbyq2xXspEapU5kqDCe1BTWNWQ/exec";
 
+/* ---------- STATUS FORMATTER ---------- */
+
+function formatStatus(status) {
+
+  if (!status) return "-";
+
+  const text = status.trim();
+
+  switch (text) {
+
+    case "Scrutinized & Sent to Registrar":
+      return `<span class="status-badge status-sent">${text}</span>`;
+
+    case "Scrutinized (Portal Opened)":
+      return `<span class="status-badge status-portal-open">${text}</span>`;
+
+    case "Scrutinized (Portal Closed)":
+      return `<span class="status-badge status-portal-closed">${text}</span>`;
+
+    case "Scrutinized":
+      return `<span class="status-badge status-scrutinized">${text}</span>`;
+
+    case "Ongoing":
+      return `<span class="status-badge status-ongoing">${text}</span>`;
+
+    default:
+      return `<span class="status-badge status-default">${text}</span>`;
+  }
+}
+
+/* ---------- LOAD DATA ---------- */
+
 function loadData() {
 
   fetch(WEB_APP_URL)
     .then(res => res.json())
     .then(data => {
-      console.log(data);
+
       const tbody = document.querySelector("#sheetTable tbody");
       tbody.innerHTML = "";
 
       let total = 0;
       let ongoing = 0;
-      let processed = 0;
-      let portal = 0;
+      let sent = 0;
+      let portalOpened = 0;
+      let portalClosed = 0;
+      let scrutinizedOnly = 0;
 
       data.forEach(item => {
 
-          total++;
-        
-          let statusText = (item.status || "").toLowerCase().trim();
-        
-          // Count dynamically
-          if (statusText.includes("ongoing")) {
+        total++;
+
+        const statusText = (item.status || "").trim();
+
+        // Exact counting (no loose includes)
+        switch (statusText) {
+
+          case "Ongoing":
             ongoing++;
-          } 
-          else if (statusText.includes("processed") || statusText.includes("sent")) {
-            processed++;
-          } 
-          else if (statusText.includes("portal")) {
-            portal++;
-          }
-        
-          let tr = document.createElement("tr");
-        
-          tr.innerHTML = `
-            <td>${item.sl || ""}</td>
-            <td>${item.dateReceived || ""}</td>
-            <td>${item.name || ""}</td>
-            <td>${item.department || ""}</td>
-            <td>${item.status || "-"}</td>
-            <td>${item.updateDate || "-"}</td>
-          `;
-        
-          tbody.appendChild(tr);
+            break;
+
+          case "Scrutinized & Sent to Registrar":
+            sent++;
+            break;
+
+          case "Scrutinized (Portal Opened)":
+            portalOpened++;
+            break;
+
+          case "Scrutinized (Portal Closed)":
+            portalClosed++;
+            break;
+
+          case "Scrutinized":
+            scrutinizedOnly++;
+            break;
+        }
+
+        let tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${item.sl || ""}</td>
+          <td>${item.dateReceived || ""}</td>
+          <td>${item.name || ""}</td>
+          <td>${item.department || ""}</td>
+          <td>${formatStatus(item.status)}</td>
+          <td>${item.updateDate || "-"}</td>
+        `;
+
+        tbody.appendChild(tr);
 
       });
 
+      // Update counters
       document.getElementById("totalCount").textContent = total;
       document.getElementById("ongoingCount").textContent = ongoing;
-      document.getElementById("processedCount").textContent = processed;
-      document.getElementById("portalCount").textContent = portal;
+      document.getElementById("processedCount").textContent = sent;
+      document.getElementById("portalCount").textContent = portalOpened;
 
       document.getElementById("lastUpdated").textContent =
         new Date().toLocaleString();
 
     })
-    
     .catch(error => {
       console.error("Error loading data:", error);
     });
