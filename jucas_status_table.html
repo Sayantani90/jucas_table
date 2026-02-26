@@ -196,59 +196,52 @@ function loadData() {
       const tbody = document.querySelector("#sheetTable tbody");
       tbody.innerHTML = "";
 
+      // Declare counters once
       let total = 0;
       let ongoing = 0;
-      let sent = 0;
-      let portalOpened = 0;
-      let portalClosed = 0;
-      let scrutinizedOnly = 0;
+      let scrutinizedGroup = 0;
+      let sentToRegistrar = 0;
 
+      // Single loop only
       data.forEach(item => {
 
-        let total = 0;
-let ongoing = 0;
-let scrutinizedGroup = 0;
-let sentToRegistrar = 0;
+        total++;
 
-data.forEach(item => {
+        const statusText = (item.status || "").trim();
 
-      total++;
-    
-      const statusText = (item.status || "").trim();
-    
-      switch (statusText) {
-    
-        case "Ongoing":
-          ongoing++;
-          break;
-    
-        case "Scrutinized":
-        case "Scrutinized (Portal Opened)":
-        case "Scrutinized (Portal Closed)":
-          scrutinizedGroup++;
-          break;
-    
-        case "Scrutinized & Sent to Registrar":
-          sentToRegistrar++;
-          break;
-      }
-    
-      let tr = document.createElement("tr");
-    
-      tr.innerHTML = `
-        <td>${item.sl || ""}</td>
-        <td>${item.dateReceived || ""}</td>
-        <td>${item.name || ""}</td>
-        <td>${item.department || ""}</td>
-        <td>${formatStatus(item.status)}</td>
-        <td>${item.updateDate || "-"}</td>
-      `;
-    
-      tbody.appendChild(tr);
-    
-    });
+        switch (statusText) {
 
-      // Update counters
+          case "Ongoing":
+            ongoing++;
+            break;
+
+          case "Scrutinized":
+          case "Scrutinized (Portal Opened)":
+          case "Scrutinized (Portal Closed)":
+            scrutinizedGroup++;
+            break;
+
+          case "Scrutinized & Sent to Registrar":
+            sentToRegistrar++;
+            break;
+        }
+
+        let tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${item.sl || ""}</td>
+          <td>${item.dateReceived || ""}</td>
+          <td>${item.name || ""}</td>
+          <td>${item.department || ""}</td>
+          <td>${formatStatus(item.status)}</td>
+          <td>${item.updateDate || "-"}</td>
+        `;
+
+        tbody.appendChild(tr);
+
+      });
+
+      // Update counters AFTER loop
       document.getElementById("totalCount").textContent = total;
       document.getElementById("ongoingCount").textContent = ongoing;
       document.getElementById("scrutinizedCount").textContent = scrutinizedGroup;
