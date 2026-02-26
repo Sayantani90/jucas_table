@@ -43,6 +43,62 @@ tr:hover {
   color: white;
   font-size: 12px;
 }
+.status-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+}
+
+/* 🔵 Sent to Registrar */
+.status-sent {
+  background: #e3f2fd;
+  color: #0d47a1;
+  border: 1px solid #90caf9;
+}
+
+/* 🟢 Portal Opened */
+.status-portal-open {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border: 1px solid #81c784;
+}
+
+/* 🔴 Portal Closed */
+.status-portal-closed {
+  background: #ffebee;
+  color: #b71c1c;
+  border: 1px solid #ef9a9a;
+}
+
+/* 🟣 Scrutinized */
+.status-scrutinized {
+  background: #f3e5f5;
+  color: #6a1b9a;
+  border: 1px solid #ce93d8;
+}
+
+/* 🟠 Ongoing */
+.status-ongoing {
+  background: #fff3e0;
+  color: #e65100;
+  border: 1px solid #ffb74d;
+}
+
+/* Default fallback */
+.status-default {
+  background: #eceff1;
+  color: #37474f;
+  border: 1px solid #cfd8dc;
+}
+
+/* subtle hover effect */
+.status-badge:hover {
+  transform: scale(1.05);
+}  
 
 .ongoing { background: #f39c12; }
 .processed { background: #27ae60; }
