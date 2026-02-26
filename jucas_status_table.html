@@ -127,32 +127,37 @@ function loadData() {
           <td>${item.documentType}</td>
           <td>${item.receivedFrom}</td>
           <td></td>
-          <td>${item.updateDate}</td>
+          <td>${item.updateDate ? item.updateDate : "-"}</td>
         `;
 
-        let statusCell = tr.children[6];
+        let statusText = item.status ? item.status : "";
+
         let span = document.createElement("span");
         span.classList.add("status");
-        span.textContent = item.status;
-
-        let s = item.status.toLowerCase();
-
-        if (s.includes("ongoing")) {
-          span.classList.add("ongoing");
-          ongoing++;
+        
+        if (statusText.trim() === "") {
+            span.textContent = "Not Updated";
+            span.style.background = "#7f8c8d"; // grey
+        } else {
+            span.textContent = statusText;
+        
+            let s = statusText.toLowerCase();
+        
+            if (s.includes("ongoing")) {
+                span.classList.add("ongoing");
+                ongoing++;
+            }
+            else if (s.includes("processed") || s.includes("scrutinized")) {
+                span.classList.add("processed");
+                processed++;
+            }
+            else if (s.includes("portal")) {
+                span.classList.add("portal");
+                portal++;
+            }
         }
-        else if (s.includes("processed") || s.includes("scrutinized")) {
-          span.classList.add("processed");
-          processed++;
-        }
-        else if (s.includes("portal")) {
-          span.classList.add("portal");
-          portal++;
-        }
 
-        statusCell.appendChild(span);
-        tbody.appendChild(tr);
-      });
+statusCell.appendChild(span);
 
       document.getElementById("totalCount").textContent = total;
       document.getElementById("ongoingCount").textContent = ongoing;
