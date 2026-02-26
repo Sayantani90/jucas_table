@@ -127,8 +127,8 @@ tr:hover {
 <div class="stats">
   <div>Total Applications: <span id="totalCount">0</span></div>
   <div>Ongoing: <span id="ongoingCount">0</span></div>
-  <div>Processed: <span id="processedCount">0</span></div>
-  <div>Portal Updated: <span id="portalCount">0</span></div>
+  <div>Scrutinized: <span id="scrutinizedCount">0</span></div>
+  <div>Sent to Registrar: <span id="sentCount">0</span></div>
 </div>
 
 <table id="sheetTable">
@@ -205,54 +205,54 @@ function loadData() {
 
       data.forEach(item => {
 
-        total++;
+        let total = 0;
+let ongoing = 0;
+let scrutinizedGroup = 0;
+let sentToRegistrar = 0;
 
-        const statusText = (item.status || "").trim();
+data.forEach(item => {
 
-        // Exact counting (no loose includes)
-        switch (statusText) {
-
-          case "Ongoing":
-            ongoing++;
-            break;
-
-          case "Scrutinized & Sent to Registrar":
-            sent++;
-            break;
-
-          case "Scrutinized (Portal Opened)":
-            portalOpened++;
-            break;
-
-          case "Scrutinized (Portal Closed)":
-            portalClosed++;
-            break;
-
-          case "Scrutinized":
-            scrutinizedOnly++;
-            break;
-        }
-
-        let tr = document.createElement("tr");
-
-        tr.innerHTML = `
-          <td>${item.sl || ""}</td>
-          <td>${item.dateReceived || ""}</td>
-          <td>${item.name || ""}</td>
-          <td>${item.department || ""}</td>
-          <td>${formatStatus(item.status)}</td>
-          <td>${item.updateDate || "-"}</td>
-        `;
-
-        tbody.appendChild(tr);
-
-      });
+      total++;
+    
+      const statusText = (item.status || "").trim();
+    
+      switch (statusText) {
+    
+        case "Ongoing":
+          ongoing++;
+          break;
+    
+        case "Scrutinized":
+        case "Scrutinized (Portal Opened)":
+        case "Scrutinized (Portal Closed)":
+          scrutinizedGroup++;
+          break;
+    
+        case "Scrutinized & Sent to Registrar":
+          sentToRegistrar++;
+          break;
+      }
+    
+      let tr = document.createElement("tr");
+    
+      tr.innerHTML = `
+        <td>${item.sl || ""}</td>
+        <td>${item.dateReceived || ""}</td>
+        <td>${item.name || ""}</td>
+        <td>${item.department || ""}</td>
+        <td>${formatStatus(item.status)}</td>
+        <td>${item.updateDate || "-"}</td>
+      `;
+    
+      tbody.appendChild(tr);
+    
+    });
 
       // Update counters
       document.getElementById("totalCount").textContent = total;
       document.getElementById("ongoingCount").textContent = ongoing;
-      document.getElementById("processedCount").textContent = sent;
-      document.getElementById("portalCount").textContent = portalOpened;
+      document.getElementById("scrutinizedCount").textContent = scrutinizedGroup;
+      document.getElementById("sentCount").textContent = sentToRegistrar;
 
       document.getElementById("lastUpdated").textContent =
         new Date().toLocaleString();
