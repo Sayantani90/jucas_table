@@ -1,925 +1,179 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAS Document Status</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 20px;
-            background-color: #f8f9fa;
-            color: #333;
-        }
+<meta charset="UTF-8">
+<title>IQAC CAS Status Dashboard</title>
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+  margin: 20px;
+}
 
-        .header h1 {
-            color: #2c3e50;
-            margin: 0;
-            font-size: 30px;
-            font-weight: 800;
-        }
+h2 {
+  text-align: center;
+}
 
-        .header p {
-            color: #666;
-            margin: 5px 0 0 0;
-            font-size: 18px;
-        }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
 
-        .table-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            margin: 0 auto;
-			overflow-x: auto;
-    		-webkit-overflow-scrolling: touch;
-        }
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-size: 14px;
+}
 
-        .official-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 0;
-            font-size: 16px;
-            line-height: 1.4;
-        }
+th {
+  background: #1f3c88;
+  color: white;
+}
 
-        .official-table thead {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-        }
+tr:hover {
+  background: #f1f1f1;
+}
 
-        .official-table thead th {
-            padding: 16px 12px;
-            text-align: left;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 14px;
-            letter-spacing: 0.5px;
-            border-bottom: 3px solid #1a252f;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
+.status {
+  padding: 5px 10px;
+  border-radius: 15px;
+  color: white;
+  font-size: 12px;
+}
 
-        .official-table tbody tr {
-            border-bottom: 1px solid #e9ecef;
-            transition: background-color 0.2s ease;
-        }
+.ongoing { background: #f39c12; }
+.processed { background: #27ae60; }
+.portal { background: #2980b9; }
 
-        .official-table tbody tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
+.footer {
+  margin-top: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 5px;
+  font-weight: bold;
+}
 
-        .official-table tbody tr:hover {
-            background-color: #e3f2fd;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .official-table tbody td {
-            padding: 12px;
-            vertical-align: top;
-            border-right: 1px solid #e9ecef;
-        }
-
-        .official-table tbody td:last-child {
-            border-right: none;
-        }
-
-        .sl-no {
-            text-align: center;
-            font-weight: 600;
-            
-            width: 50px;
-        }
-
-        .date {
-            white-space: nowrap;
-            color: #495057;
-            width: 90px;
-        }
-
-        .name {
-            font-weight: 500;
-            color: #2c3e50;
-            min-width: 120px;
-        }
-
-        .dept {
-            color: #6c757d;
-            
-            min-width: 100px;
-        }
-
-        .status {
-            font-weight: 500;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .status.completed {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .status.scrutinized {
-            background-color: #cce5ff;
-            color: #004085;
-            border: 1px solid #99d6ff;
-        }
-
-        .status.ongoing {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-
-        .received-from {
-            
-            color: #6c757d;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                margin: 10px;
-            }
-            
-            .official-table {
-                font-size: 11px;
-            }
-            
-            .official-table thead th,
-            .official-table tbody td {
-                padding: 8px 6px;
-            }
-        }
-		.logo-container {
-		    text-align: center;
-		    margin-bottom: 15px;
-		}
-
-		.logo-container img {
-		    height: 90px;        /* adjust if needed */
-		    max-width: 100%;
-		}
-
-        /* Search & Filter Bar */
-        .controls-bar {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-        .search-wrapper {
-            position: relative;
-            flex: 1;
-            min-width: 220px;
-        }
-        .search-wrapper svg {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-            pointer-events: none;
-        }
-        #searchInput {
-            width: 100%;
-            padding: 10px 12px 10px 38px;
-            border: 1px solid #ced4da;
-            border-radius: 6px;
-            font-size: 15px;
-            outline: none;
-            box-sizing: border-box;
-            transition: border-color 0.2s;
-        }
-        #searchInput:focus { border-color: #2c3e50; }
-
-        #statusFilter {
-            padding: 10px 12px;
-            border: 1px solid #ced4da;
-            border-radius: 6px;
-            font-size: 14px;
-            outline: none;
-            background: white;
-            cursor: pointer;
-        }
-        #resultCount {
-            font-size: 13px;
-            color: #6c757d;
-            white-space: nowrap;
-        }
-
-        /* Sortable headers */
-        .official-table thead th {
-            cursor: pointer;
-            user-select: none;
-        }
-        .official-table thead th.sort-asc::after  { content: " ▲"; font-size: 11px; opacity: 0.8; }
-        .official-table thead th.sort-desc::after { content: " ▼"; font-size: 11px; opacity: 0.8; }
-        .official-table thead th:hover { background: rgba(255,255,255,0.15); }
-
-        /* No results row */
-        #noResults { display: none; text-align: center; padding: 24px; color: #999; font-size: 15px; }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            font-size: 14px;
-            color: #131340;
-        }
-		.ft_font{
-			font-weight: 700;
-		}
-		table th:nth-child(5),
-		table td:nth-child(5),
-		table th:nth-child(6),
-		table td:nth-child(6) {
-				display:none;
-		}
-		
-    </style>
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 10px;
+}
+</style>
 </head>
+
 <body>
-	<div class="logo-container">
-    	<img src="ju_logo.png" alt="Jadavpur University Logo">
-	</div>
-    <div class="header">
-        <h1>CAS Document Status</h1>
-        <p>Documents received at IQAC Office from February 2025</p>
-    </div>
 
-    <div class="controls-bar">
-        <div class="search-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-            </svg>
-            <input type="text" id="searchInput" placeholder="Search by name, department, status…">
-        </div>
-        <select id="statusFilter">
-            <option value="">All Statuses</option>
-            <option value="scrutinized">Scrutinized and sent to Registrar</option>
-            <option value="completed">Scrutinized</option>
-            <option value="ongoing">Processing Ongoing</option>
-        </select>
-        <span id="resultCount"></span>
-    </div>
+<h2>CAS Application Status – IQAC</h2>
 
-    <div class="table-container">
-        <table class="official-table" id="sheetTable">
-            <thead>
-                <tr>
-                    <th class="sl-no">Sl. No</th>
-                    <th>Date Received</th>
-                    <th>Name</th>
-                    <th>Department</th>
-                    <th>Document Type</th>
-                    <th>Received From</th>
-                    <th>Status</th>
-                    <th>Date of Update</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="sl-no">1</td>
-                    <td class="date">07.03.2025</td>
-                    <td class="name">Kaushik Mukherjee</td>
-                    <td class="dept">Pharma</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">08.05.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">2</td>
-                    <td class="date">18.03.2025</td>
-                    <td class="name">Sachindra Nath Das</td>
-                    <td class="dept">Instru. Sc.</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">26.05.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">3</td>
-                    <td class="date">19.03.2025</td>
-                    <td class="name">Arpitam Chatterjee</td>
-                    <td class="dept">Printing</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">26.05.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">4</td>
-                    <td class="date">20.03.2025</td>
-                    <td class="name">Narayan Roy</td>
-                    <td class="dept">Civil</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">26.05.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">5</td>
-                    <td class="date">23.03.2025</td>
-                    <td class="name">Anirban Mitra</td>
-                    <td class="dept">Mechanical</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">26.05.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">6</td>
-                    <td class="date">24.03.2025</td>
-                    <td class="name">Chandan Maity</td>
-                    <td class="dept">Physics</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">13.06.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">7</td>
-                    <td class="date">25.03.2025</td>
-                    <td class="name">Parthasarathi Satvaya</td>
-                    <td class="dept">School of Illumination Sc</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">16.06.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">8</td>
-                    <td class="date">08.04.2025</td>
-                    <td class="name">Sudeshna Saha</td>
-                    <td class="dept">Chemical Engineering</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">13.06.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">9</td>
-                    <td class="date">23.04.2025</td>
-                    <td class="name">Pratyusha Rakshit</td>
-                    <td class="dept">ETCE</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">13.06.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">10</td>
-                    <td class="date">23.05.2025</td>
-                    <td class="name">Mehabub Rahaman</td>
-                    <td class="dept">Chemical Engineering</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">21.07.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">11</td>
-                    <td class="date">28.05.2025</td>
-                    <td class="name">Ankush Majumdar</td>
-                    <td class="dept">Civil</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">02.07.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">12</td>
-                    <td class="date">29.05.2025</td>
-                    <td class="name">Shilpi Naskar</td>
-                    <td class="dept">Printing</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">14.08.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">13</td>
-                    <td class="date">30.05.2025</td>
-                    <td class="name">Suman Kalyan Das</td>
-                    <td class="dept">Mechanical</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">02.07.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">14</td>
-                    <td class="date">16.06.2025</td>
-                    <td class="name">Santosh Biswas</td>
-                    <td class="dept">Maths</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">21.07.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">15</td>
-                    <td class="date">17.06.2025</td>
-                    <td class="name">Piyali Basak</td>
-                    <td class="dept">School of Bio Sc and Engineering</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">22.07.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">16</td>
-                    <td class="date">18.06.2025</td>
-                    <td class="name">Sathi Banerjee</td>
-                    <td class="dept">Metallurgical and Material Engg</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">21.07.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">17</td>
-                    <td class="date">04.07.2025</td>
-                    <td class="name">Susanta Chaudhuri</td>
-                    <td class="dept">Geology</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">19.08.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">18</td>
-                    <td class="date">18.07.2025</td>
-                    <td class="name">Tohida Rehman</td>
-                    <td class="dept">IT</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">26.08.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">19</td>
-                    <td class="date">29.07.2025</td>
-                    <td class="name">Sahinur Reja</td>
-                    <td class="dept">Physics</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status completed">Scrutinized (Portal Opened)</span></td>
-                    <td class="date">12.08.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">20</td>
-                    <td class="date">01.08.2025</td>
-                    <td class="name">Rabindranath Gayen</td>
-                    <td class="dept">Physics</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">18.09.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">21</td>
-                    <td class="date">05.08.2025</td>
-                    <td class="name">Satyadeep Waiba</td>
-                    <td class="dept">Chemistry</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">18.09.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">22</td>
-                    <td class="date">07.08.2025</td>
-                    <td class="name">Ranu Biswas</td>
-                    <td class="dept">Pharmacy</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">18.09.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">23</td>
-                    <td class="date">13.08.2025</td>
-                    <td class="name">Shyamal Roy</td>
-                    <td class="dept">Chemical Engineering</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">18.09.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">24</td>
-                    <td class="date">20.08.2025</td>
-                    <td class="name">Mita Howladar</td>
-                    <td class="dept">Education</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">6.11.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">25</td>
-                    <td class="date">26.08.2025</td>
-                    <td class="name">Arup Bhattacharya</td>
-                    <td class="dept">IR</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">23.12.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">26</td>
-                    <td class="date">28.08.2025</td>
-                    <td class="name">Sanchita Mondal</td>
-                    <td class="dept">Pharmacy</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">12.02.2026</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">27</td>
-                    <td class="date">01.09.2025</td>
-                    <td class="name">Simontini Das</td>
-                    <td class="dept">Economics</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">6.11.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">28</td>
-                    <td class="date">12.09.2025</td>
-                    <td class="name">Rilina Basu</td>
-                    <td class="dept">Economics</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">24.12.2025</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">29</td>
-                    <td class="date">15.09.2025</td>
-                    <td class="name">Bhagaban Behera</td>
-                    <td class="dept">IR</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">15.01.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">30</td>
-                    <td class="date">08.10.2025</td>
-                    <td class="name">Vikas Dixit</td>
-                    <td class="dept">Economics</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">10.12.2025</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">31</td>
-                    <td class="date">29.10.2025</td>
-                    <td class="name">Anupam Ghosh</td>
-                    <td class="dept">Geology</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">19.02.2026</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">32</td>
-                    <td class="date">30.10.2025</td>
-                    <td class="name">Dipankar Das</td>
-                    <td class="dept">Computer Sc. & Engineering</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">20.01.2026</td>
-                </tr>
-                <tr>
-                    <td class="sl-no">33</td>
-                    <td class="date">31.10.2025</td>
-                    <td class="name">Soumik Mukhopadhyay</td>
-                    <td class="dept">Geology</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">19.02.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">34</td>
-                    <td class="date">03.11.2025</td>
-                    <td class="name">Sadhana M.Chatterjee</td>
-                    <td class="dept">Geology</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">19.02.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">35</td>
-                    <td class="date">12.11.2025</td>
-                    <td class="name">Kajal Ghosal</td>
-                    <td class="dept">Pharmacy</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">21.01.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">36</td>
-                    <td class="date">19.11.2025</td>
-                    <td class="name">Debajit Dutta</td>
-                    <td class="dept">History</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">15.01.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">37</td>
-                    <td class="date">01.12.2025</td>
-                    <td class="name">Tamal Krishna Kayal</td>
-                    <td class="dept">Economics</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">21.01.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">38</td>
-                    <td class="date">01.12.2025</td>
-                    <td class="name">Prasenjit Ghosh</td>
-                    <td class="dept">Economics</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">15.01.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">39</td>
-                    <td class="date">12.12.2025</td>
-                    <td class="name">Sridip Chatterjee</td>
-                    <td class="dept">Physical Education</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">03.02.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">40</td>
-                    <td class="date">08.01.2026</td>
-                    <td class="name">Mahasweta Mandal</td>
-                    <td class="dept">Printing Engineering</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">30.01.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">41</td>
-                    <td class="date">09.01.2026</td>
-                    <td class="name">Mugdha Majumdar</td>
-                    <td class="dept">Bengali</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">30.01.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">42</td>
-                    <td class="date">14.01.2026</td>
-                    <td class="name">Chinmoy Ghorai</td>
-                    <td class="dept">ETCE</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">13.02.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">43</td>
-                    <td class="date">14.01.2026</td>
-                    <td class="name">Shovanlal Gayen</td>
-                    <td class="dept">Pharmacy</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">13.02.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">44</td>
-                    <td class="date">15.01.2026</td>
-                    <td class="name">Amitabha Das</td>
-                    <td class="dept">School of Nuclear Studies and Application</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">25.02.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">45</td>
-                    <td class="date">15.01.2026</td>
-                    <td class="name">Chandan Kumar Ghosh</td>
-                    <td class="dept">School Of Material Science And Nanotechnology</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">25.02.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">46</td>
-                    <td class="date">19.01.2026</td>
-                    <td class="name">Kaustuv Das</td>
-                    <td class="dept">Physics</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status scrutinized">Scrutinized and sent to Registrar</span></td>
-                    <td class="date">25.02.2026</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">47</td>
-                    <td class="date">28.01.2026</td>
-                    <td class="name">Suddhasatwa Chakraborty</td>
-                    <td class="dept">Electrical Engineering</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status ongoing">Processing Ongoing</span></td>
-                    <td class="date">-</td>
-                </tr>
-				
-				<tr>
-                    <td class="sl-no">48</td>
-                    <td class="date">09.02.2026</td>
-                    <td class="name">Santosh Kumar Das</td>
-                    <td class="dept">Civil Engineering</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status ongoing">Processing Ongoing</span></td>
-                    <td class="date">-</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">49</td>
-                    <td class="date">10.02.2026</td>
-                    <td class="name">Chandrima Mondal</td>
-                    <td class="dept">ETCE</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status ongoing">Processing Ongoing</span></td>
-                    <td class="date">-</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">50</td>
-                    <td class="date">19.02.2026</td>
-                    <td class="name">Pranibesh Mandal</td>
-                    <td class="dept">Mechanical Engineering</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status ongoing">Processing Ongoing</span></td>
-                    <td class="date">-</td>
-                </tr>
-				<tr>
-                    <td class="sl-no">51</td>
-                    <td class="date">23.02.2026</td>
-                    <td class="name">Swagata Paul</td>
-                    <td class="dept">Geology</td>
-                    <td>New Application for processing</td>
-                    <td class="received-from">Via email</td>
-                    <td><span class="status ongoing">Processing Ongoing</span></td>
-                    <td class="date">-</td>
-                </tr>
-                <tr id="noResults"><td colspan="8">No matching records found.</td></tr>
+<div class="stats">
+  <div>Total Applications: <span id="totalCount">0</span></div>
+  <div>Ongoing: <span id="ongoingCount">0</span></div>
+  <div>Processed: <span id="processedCount">0</span></div>
+  <div>Portal Updated: <span id="portalCount">0</span></div>
+</div>
 
-</tbody>
-        </table>
-    </div>
+<table id="sheetTable">
+  <thead>
+    <tr>
+      <th>Sl No</th>
+      <th>Date Received</th>
+      <th>Name</th>
+      <th>Department</th>
+      <th>Document Type</th>
+      <th>Received From</th>
+      <th>Status</th>
+      <th>Date of Update</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
+<div class="footer">
+  Last Auto Updated: <span id="lastUpdated"></span>
+</div>
 
-    <div class="footer">
-        <p>
-			<span class="ft_font">Total Applications:</span> 51 | 
-			<span class="ft_font" style="color:#155724;background-color: #d4edda;">Scrutinized:</span> 1 | 
-			<span class="ft_font" style="color:#004085;background-color: #cce5ff;">Scrutinized and Processed:</span> 45 | 
-			<span class="ft_font" style="color:#856404;background-color: #fff3cd;">Ongoing:</span> 5</p>
-        <p>Last Updated: February 2026</p>
-    </div>
+<script>
 
-    <script>
-    fetch("https://script.google.com/macros/s/AKfycbw7mCH39jdlbJU4EMN3sArr-raQiuaS2-UndBT4xxiK7S2RcesnpWiE-xYaS5o-R9p-4g/exec")
-	  .then(response => response.json())
-	  .then(data => {
-	    let table = document.getElementById("sheetTable");
-	
-	    data.forEach(row => {
-	      let tr = document.createElement("tr");
-	      row.forEach(cell => {
-	        let td = document.createElement("td");
-	        td.textContent = cell;
-	        tr.appendChild(td);
-	      });
-	      table.appendChild(tr);
-	    });
-	  });
-		setInterval(loadData, 10000); // refresh every 10 seconds
-		
-		(function () {
-        const table   = document.querySelector('.official-table');
-        const tbody   = table.querySelector('tbody');
-        const headers = table.querySelectorAll('thead th');
-        const noRes   = document.getElementById('noResults');
-        const countEl = document.getElementById('resultCount');
+const WEB_APP_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
 
-        const dateColIdx = [1, 7];
+function loadData() {
 
-        function parseDate(str) {
-            const parts = str.trim().split('.');
-            if (parts.length !== 3) return 0;
-            return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+  fetch(WEB_APP_URL)
+    .then(res => res.json())
+    .then(data => {
+
+      const tbody = document.querySelector("#sheetTable tbody");
+      tbody.innerHTML = "";
+
+      let total = 0;
+      let ongoing = 0;
+      let processed = 0;
+      let portal = 0;
+
+      data.forEach(item => {
+
+        total++;
+
+        let tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${item.sl}</td>
+          <td>${item.dateReceived}</td>
+          <td>${item.name}</td>
+          <td>${item.department}</td>
+          <td>${item.documentType}</td>
+          <td>${item.receivedFrom}</td>
+          <td></td>
+          <td>${item.updateDate}</td>
+        `;
+
+        let statusCell = tr.children[6];
+        let span = document.createElement("span");
+        span.classList.add("status");
+        span.textContent = item.status;
+
+        let s = item.status.toLowerCase();
+
+        if (s.includes("ongoing")) {
+          span.classList.add("ongoing");
+          ongoing++;
+        }
+        else if (s.includes("processed") || s.includes("scrutinized")) {
+          span.classList.add("processed");
+          processed++;
+        }
+        else if (s.includes("portal")) {
+          span.classList.add("portal");
+          portal++;
         }
 
-        let sortCol = -1, sortDir = 1;
+        statusCell.appendChild(span);
+        tbody.appendChild(tr);
+      });
 
-        headers.forEach((th, colIdx) => {
-            th.addEventListener('click', () => {
-                if (sortCol === colIdx) sortDir *= -1;
-                else { sortCol = colIdx; sortDir = 1; }
+      document.getElementById("totalCount").textContent = total;
+      document.getElementById("ongoingCount").textContent = ongoing;
+      document.getElementById("processedCount").textContent = processed;
+      document.getElementById("portalCount").textContent = portal;
 
-                headers.forEach(h => h.classList.remove('sort-asc','sort-desc'));
-                th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+      document.getElementById("lastUpdated").textContent =
+        new Date().toLocaleString();
 
-                const rows = Array.from(tbody.querySelectorAll('tr:not(#noResults)'));
-                rows.sort((a, b) => {
-                    const aText = (a.cells[colIdx]?.innerText || '').trim();
-                    const bText = (b.cells[colIdx]?.innerText || '').trim();
-                    let cmp;
-                    if (dateColIdx.includes(colIdx)) {
-                        cmp = parseDate(aText) - parseDate(bText);
-                    } else if (!isNaN(aText) && !isNaN(bText) && aText !== '' && bText !== '') {
-                        cmp = Number(aText) - Number(bText);
-                    } else {
-                        cmp = aText.localeCompare(bText);
-                    }
-                    return cmp * sortDir;
-                });
-                rows.forEach(r => tbody.appendChild(r));
-                updateCount();
-            });
-        });
+    })
+    .catch(error => {
+      console.error("Error loading data:", error);
+    });
+}
 
-        const searchInput  = document.getElementById('searchInput');
-        const statusFilter = document.getElementById('statusFilter');
+loadData();
 
-        function filterRows() {
-            const q      = searchInput.value.trim().toLowerCase();
-            const status = statusFilter.value;
-            const rows   = tbody.querySelectorAll('tr:not(#noResults)');
-            let visible  = 0;
+// Auto refresh every 60 seconds
+setInterval(loadData, 60000);
 
-            rows.forEach(row => {
-                const text        = row.innerText.toLowerCase();
-                const statusSpan  = row.querySelector('.status');
-                const matchText   = !q || text.includes(q);
-                const matchStatus = !status || (statusSpan && statusSpan.classList.contains(status));
-                const show = matchText && matchStatus;
-                row.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
+</script>
 
-            noRes.style.display = visible === 0 ? 'table-row' : 'none';
-            updateCount(visible, rows.length);
-        }
-
-        function updateCount(vis, total) {
-            const rows = tbody.querySelectorAll('tr:not(#noResults)');
-            const v = (vis !== undefined) ? vis : Array.from(rows).filter(r => r.style.display !== 'none').length;
-            const t = total || rows.length;
-            countEl.textContent = (v === t) ? `${t} entries` : `${v} of ${t} entries`;
-        }
-
-        searchInput.addEventListener('input', filterRows);
-        statusFilter.addEventListener('change', filterRows);
-        updateCount();
-    })();
-	
-    </script>
 </body>
 </html>
