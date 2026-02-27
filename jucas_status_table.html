@@ -3,253 +3,644 @@
 <head>
 <meta charset="UTF-8">
 <title>IQAC CAS Status Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f6f9;
-  margin: 20px;
-}
+  :root {
+    --navy: #0f2557;
+    --navy-mid: #1f3c88;
+    --navy-light: #e8edf8;
+    --accent: #e8a020;
+    --bg: #f0f3fa;
+    --surface: #ffffff;
+    --border: #d5dce8;
+    --text: #1a2540;
+    --text-muted: #5a6a8a;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(15,37,87,0.09);
+    --shadow-lg: 0 6px 32px rgba(15,37,87,0.13);
+  }
 
-h2 {
-  text-align: center;
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-}
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
 
-th, td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: center;
-  font-size: 14px;
-}
+  /* ─── HEADER ─── */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, #1a3a7a 60%, #2a5298 100%);
+    padding: 32px 40px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    pointer-events: none;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 30%;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(232,160,32,0.08);
+    pointer-events: none;
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 6px;
+  }
+  .header-icon {
+    width: 44px; height: 44px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.2px;
+  }
+  .header-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    margin-left: 60px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.5px;
+  }
 
-th {
-  background: #1f3c88;
-  color: white;
-}
+  /* ─── STATS ─── */
+  .stats-bar {
+    max-width: 1200px;
+    margin: -22px auto 0;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    position: relative;
+    z-index: 2;
+  }
+  .stat-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    box-shadow: var(--shadow-lg);
+    border-top: 3px solid transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: transform 0.18s;
+  }
+  .stat-card:hover { transform: translateY(-2px); }
+  .stat-card.total   { border-color: var(--navy-mid); }
+  .stat-card.ongoing { border-color: #e65100; }
+  .stat-card.scrutinized { border-color: #6a1b9a; }
+  .stat-card.sent    { border-color: #0d47a1; }
 
-tr:hover {
-  background: #f1f1f1;
-}
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+  }
+  .stat-value {
+    font-size: 30px;
+    font-weight: 700;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 1;
+  }
+  .stat-card.total   .stat-value { color: var(--navy-mid); }
+  .stat-card.ongoing .stat-value { color: #e65100; }
+  .stat-card.scrutinized .stat-value { color: #6a1b9a; }
+  .stat-card.sent    .stat-value { color: #0d47a1; }
 
+  /* ─── CONTROLS ─── */
+  .controls-wrap {
+    max-width: 1200px;
+    margin: 26px auto 0;
+    padding: 0 40px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .search-box {
+    flex: 1;
+    min-width: 220px;
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--surface);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-box input:focus {
+    border-color: var(--navy-mid);
+    box-shadow: 0 0 0 3px rgba(31,60,136,0.1);
+  }
+  .search-icon {
+    position: absolute;
+    left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 15px;
+    pointer-events: none;
+  }
 
-.status-badge {
-  display: inline-block;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  transition: all 0.2s ease;
-}
+  .filter-select {
+    padding: 10px 36px 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--surface);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235a6a8a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: border-color 0.2s;
+    min-width: 190px;
+  }
+  .filter-select:focus { border-color: var(--navy-mid); }
 
-/* 🔵 Sent to Registrar */
-.status-sent {
-  background: #e3f2fd;
-  color: #0d47a1;
-  border: 1px solid #90caf9;
-}
+  .btn-clear {
+    padding: 10px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+  .btn-clear:hover {
+    background: var(--navy-light);
+    border-color: var(--navy-mid);
+    color: var(--navy-mid);
+  }
 
-/* 🟢 Portal Opened */
-.status-portal-open {
-  background: #e8f5e9;
-  color: #1b5e20;
-  border: 1px solid #81c784;
-}
+  .results-info {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-left: auto;
+    white-space: nowrap;
+    font-family: 'IBM Plex Mono', monospace;
+  }
 
-/* 🔴 Portal Closed */
-.status-portal-closed {
-  background: #ffebee;
-  color: #b71c1c;
-  border: 1px solid #ef9a9a;
-}
+  /* ─── TABLE ─── */
+  .table-wrap {
+    max-width: 1200px;
+    margin: 18px auto 0;
+    padding: 0 40px;
+  }
+  .table-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
 
-/* 🟣 Scrutinized */
-.status-scrutinized {
-  background: #f3e5f5;
-  color: #6a1b9a;
-  border: 1px solid #ce93d8;
-}
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
 
-/* 🟠 Ongoing */
-.status-ongoing {
-  background: #fff3e0;
-  color: #e65100;
-  border: 1px solid #ffb74d;
-}
+  thead tr {
+    background: var(--navy);
+  }
+  th {
+    padding: 13px 14px;
+    color: rgba(255,255,255,0.92);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    text-align: left;
+    border: none;
+    position: relative;
+    user-select: none;
+  }
+  th:first-child { padding-left: 20px; text-align: center; }
+  th.sortable { cursor: pointer; }
+  th.sortable:hover { background: rgba(255,255,255,0.08); }
+  th .sort-icon {
+    display: inline-block;
+    margin-left: 5px;
+    opacity: 0.4;
+    font-size: 10px;
+    vertical-align: middle;
+    transition: opacity 0.15s;
+  }
+  th.sort-asc .sort-icon::after  { content: '▲'; opacity: 1; }
+  th.sort-desc .sort-icon::after { content: '▼'; opacity: 1; }
+  th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: '⇅'; }
 
-/* Default fallback */
-.status-default {
-  background: #eceff1;
-  color: #37474f;
-  border: 1px solid #cfd8dc;
-}
+  td {
+    padding: 12px 14px;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    text-align: left;
+    vertical-align: middle;
+  }
+  td:first-child {
+    text-align: center;
+    color: var(--text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding-left: 20px;
+  }
+  td:nth-child(2) {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+  td:nth-child(3) { font-weight: 600; color: var(--navy); }
+  td:nth-child(4) { color: var(--text-muted); font-size: 13px; }
+  td:last-child {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
 
-/* subtle hover effect */
-.status-badge:hover {
-  transform: scale(1.05);
-}  
+  tbody tr { transition: background 0.12s; }
+  tbody tr:hover { background: #f5f8ff; }
+  tbody tr:last-child td { border-bottom: none; }
 
-.ongoing { background: #f39c12; }
-.processed { background: #27ae60; }
-.portal { background: #2980b9; }
+  /* ─── STATUS BADGES ─── */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+  }
+  .status-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
 
-.footer {
-  margin-top: 20px;
-  background: white;
-  padding: 15px;
-  border-radius: 5px;
-  font-weight: bold;
-}
+  .status-sent {
+    background: #e3f2fd; color: #0d47a1; border: 1px solid #90caf9;
+  }
+  .status-sent::before { background: #1565c0; }
 
-.stats {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 10px;
-}
+  .status-portal-open {
+    background: #e8f5e9; color: #1b5e20; border: 1px solid #81c784;
+  }
+  .status-portal-open::before { background: #2e7d32; }
+
+  .status-portal-closed {
+    background: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a;
+  }
+  .status-portal-closed::before { background: #c62828; }
+
+  .status-scrutinized {
+    background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8;
+  }
+  .status-scrutinized::before { background: #7b1fa2; }
+
+  .status-ongoing {
+    background: #fff3e0; color: #e65100; border: 1px solid #ffb74d;
+  }
+  .status-ongoing::before { background: #f57c00; animation: pulse 1.8s infinite; }
+
+  .status-default {
+    background: #eceff1; color: #37474f; border: 1px solid #cfd8dc;
+  }
+  .status-default::before { background: #607d8b; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ─── EMPTY STATE ─── */
+  .empty-row td {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 14px;
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    max-width: 1200px;
+    margin: 14px auto 0;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .footer-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #2e7d32;
+    animation: pulse 2s infinite;
+  }
+
+  /* ─── LOADING ─── */
+  .loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15,37,87,0.18);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .loading-overlay.active { display: flex; }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 768px) {
+    .header { padding: 24px 20px 20px; }
+    .stats-bar, .controls-wrap, .table-wrap, .footer { padding: 0 16px; }
+    .stats-bar { grid-template-columns: repeat(2,1fr); }
+    .results-info { display: none; }
+    h2 { font-size: 18px; }
+  }
 </style>
 </head>
 
 <body>
 
-<h2>CAS Application Status – IQAC</h2>
-
-<div class="stats">
-  <div>Total Applications: <span id="totalCount">0</span></div>
-  <div>Ongoing: <span id="ongoingCount">0</span></div>
-  <div>Scrutinized: <span id="scrutinizedCount">0</span></div>
-  <div>Sent to Registrar: <span id="sentCount">0</span></div>
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="header-icon">📋</div>
+      <h2>CAS Application Status – IQAC</h2>
+    </div>
+    <div class="header-sub">Internal Quality Assurance Cell · Career Advancement Scheme</div>
+  </div>
 </div>
 
-<table id="sheetTable">
-  <thead>
-    <tr>
-      <th>Sl No</th>
-      <th>Date Received</th>
-      <th>Name</th>
-      <th>Department</th>
-      <th>Status</th>
-      <th>Date of Update</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-card total">
+    <div class="stat-label">Total Applications</div>
+    <div class="stat-value" id="totalCount">—</div>
+  </div>
+  <div class="stat-card ongoing">
+    <div class="stat-label">Ongoing</div>
+    <div class="stat-value" id="ongoingCount">—</div>
+  </div>
+  <div class="stat-card scrutinized">
+    <div class="stat-label">Scrutinized</div>
+    <div class="stat-value" id="scrutinizedCount">—</div>
+  </div>
+  <div class="stat-card sent">
+    <div class="stat-label">Sent to Registrar</div>
+    <div class="stat-value" id="sentCount">—</div>
+  </div>
+</div>
 
+<!-- CONTROLS -->
+<div class="controls-wrap">
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search by name, department…" autocomplete="off">
+  </div>
+  <select class="filter-select" id="statusFilter">
+    <option value="">All Statuses</option>
+    <option value="Ongoing">Ongoing</option>
+    <option value="Scrutinized">Scrutinized</option>
+    <option value="Scrutinized (Portal Opened)">Scrutinized (Portal Opened)</option>
+    <option value="Scrutinized (Portal Closed)">Scrutinized (Portal Closed)</option>
+    <option value="Scrutinized & Sent to Registrar">Sent to Registrar</option>
+  </select>
+  <button class="btn-clear" id="clearBtn">✕ Clear</button>
+  <div class="results-info" id="resultsInfo"></div>
+</div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <div class="table-card">
+    <table id="sheetTable">
+      <thead>
+        <tr>
+          <th>Sl No</th>
+          <th class="sortable" data-col="1">Date Received <span class="sort-icon"></span></th>
+          <th class="sortable" data-col="2">Name <span class="sort-icon"></span></th>
+          <th class="sortable" data-col="3">Department <span class="sort-icon"></span></th>
+          <th class="sortable" data-col="4">Status <span class="sort-icon"></span></th>
+          <th class="sortable" data-col="5">Date of Update <span class="sort-icon"></span></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- FOOTER -->
 <div class="footer">
-  Last Auto Updated: <span id="lastUpdated"></span>
+  <div class="footer-dot"></div>
+  Last auto-updated: <span id="lastUpdated">—</span>
+  &nbsp;·&nbsp; Refreshes every 20s
 </div>
 
-
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
 
 <script>
 
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzcb3SnesxhcJmVt82IS6yiBxt_JFfAc5Sx0_p1pqcyAbyq2xXspEapU5kqDCe1BTWNWQ/exec";
 
-/* ---------- STATUS FORMATTER ---------- */
+/* ─── STATE ─── */
+let allData = [];
+let sortCol = -1;
+let sortDir = 'asc';
 
+/* ─── STATUS FORMATTER ─── */
 function formatStatus(status) {
-
   if (!status) return "-";
-
   const text = status.trim();
-
   switch (text) {
-
     case "Scrutinized & Sent to Registrar":
       return `<span class="status-badge status-sent">${text}</span>`;
-
     case "Scrutinized (Portal Opened)":
       return `<span class="status-badge status-portal-open">${text}</span>`;
-
     case "Scrutinized (Portal Closed)":
       return `<span class="status-badge status-portal-closed">${text}</span>`;
-
     case "Scrutinized":
       return `<span class="status-badge status-scrutinized">${text}</span>`;
-
     case "Ongoing":
       return `<span class="status-badge status-ongoing">${text}</span>`;
-
     default:
       return `<span class="status-badge status-default">${text}</span>`;
   }
 }
 
-/* ---------- LOAD DATA ---------- */
+/* ─── RENDER ─── */
+function renderTable() {
+  const query  = document.getElementById('searchInput').value.trim().toLowerCase();
+  const filter = document.getElementById('statusFilter').value.toLowerCase();
 
+  let rows = allData.filter(item => {
+    const matchSearch = !query ||
+      (item.name || '').toLowerCase().includes(query) ||
+      (item.department || '').toLowerCase().includes(query) ||
+      (item.sl || '').toString().toLowerCase().includes(query);
+    const matchFilter = !filter ||
+      (item.status || '').trim().toLowerCase() === filter;
+    return matchSearch && matchFilter;
+  });
+
+  // Sort
+  if (sortCol >= 0) {
+    const keys = ['sl','dateReceived','name','department','status','updateDate'];
+    const key = keys[sortCol];
+    rows.sort((a, b) => {
+      const va = (a[key] || '').toString().toLowerCase();
+      const vb = (b[key] || '').toString().toLowerCase();
+      return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+  }
+
+  const tbody = document.querySelector("#sheetTable tbody");
+  tbody.innerHTML = "";
+
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">No matching applications found.</td></tr>`;
+  } else {
+    rows.forEach(item => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${item.sl || ""}</td>
+        <td>${item.dateReceived || ""}</td>
+        <td>${item.name || ""}</td>
+        <td>${item.department || ""}</td>
+        <td>${formatStatus(item.status)}</td>
+        <td>${item.updateDate || "-"}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById('resultsInfo').textContent =
+    rows.length === allData.length
+      ? `${allData.length} applications`
+      : `${rows.length} of ${allData.length} shown`;
+}
+
+/* ─── UPDATE COUNTERS ─── */
+function updateCounters() {
+  let total = 0, ongoing = 0, scrutinized = 0, sent = 0;
+  allData.forEach(item => {
+    total++;
+    const s = (item.status || '').trim().toLowerCase();
+    if (s.includes("ongoing")) ongoing++;
+    else if (s.includes("sent to registrar")) sent++;
+    else if (s.includes("scrutinized")) scrutinized++;
+  });
+  document.getElementById("totalCount").textContent = total;
+  document.getElementById("ongoingCount").textContent = ongoing;
+  document.getElementById("scrutinizedCount").textContent = scrutinized;
+  document.getElementById("sentCount").textContent = sent;
+}
+
+/* ─── LOAD DATA ─── */
+let firstLoad = true;
 function loadData() {
-
+  if (firstLoad) document.getElementById('loadingOverlay').classList.add('active');
   fetch(WEB_APP_URL)
     .then(res => res.json())
     .then(data => {
-
-      const tbody = document.querySelector("#sheetTable tbody");
-      tbody.innerHTML = "";
-
-      let total = 0;
-      let ongoing = 0;
-      let scrutinizedGroup = 0;
-      let sentToRegistrar = 0;
-
-      data.forEach(item => {
-
-        total++;
-
-        const rawStatus = item.status || "";
-        const status = rawStatus.trim().toLowerCase();
-
-        // DEBUG — remove later
-        console.log("Status from sheet:", rawStatus);
-
-        if (status.includes("ongoing")) {
-          ongoing++;
-        }
-        else if (status.includes("sent to registrar")) {
-          sentToRegistrar++;
-        }
-        else if (status.includes("scrutinized")) {
-          scrutinizedGroup++;
-        }
-
-        let tr = document.createElement("tr");
-
-        tr.innerHTML = `
-          <td>${item.sl || ""}</td>
-          <td>${item.dateReceived || ""}</td>
-          <td>${item.name || ""}</td>
-          <td>${item.department || ""}</td>
-          <td>${formatStatus(item.status)}</td>
-          <td>${item.updateDate || "-"}</td>
-        `;
-
-        tbody.appendChild(tr);
-
-      });
-
-      // Update counters AFTER loop
-      document.getElementById("totalCount").textContent = total;
-      document.getElementById("ongoingCount").textContent = ongoing;
-      document.getElementById("scrutinizedCount").textContent = scrutinizedGroup;
-      document.getElementById("sentCount").textContent = sentToRegistrar;
-
-      document.getElementById("lastUpdated").textContent =
-        new Date().toLocaleString();
-
+      allData = data;
+      updateCounters();
+      renderTable();
+      document.getElementById("lastUpdated").textContent = new Date().toLocaleString();
+      document.getElementById('loadingOverlay').classList.remove('active');
+      firstLoad = false;
     })
     .catch(error => {
       console.error("Error loading data:", error);
+      document.getElementById('loadingOverlay').classList.remove('active');
     });
 }
 
-loadData();
+/* ─── SORT ─── */
+document.querySelectorAll('th.sortable').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = parseInt(th.dataset.col);
+    if (sortCol === col) {
+      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortCol = col;
+      sortDir = 'asc';
+    }
+    document.querySelectorAll('th.sortable').forEach(el => {
+      el.classList.remove('sort-asc','sort-desc');
+    });
+    th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+    renderTable();
+  });
+});
 
-// Auto refresh every 20 seconds
-setInterval(loadData, 20000);
+/* ─── SEARCH / FILTER ─── */
+document.getElementById('searchInput').addEventListener('input', renderTable);
+document.getElementById('statusFilter').addEventListener('change', renderTable);
+document.getElementById('clearBtn').addEventListener('click', () => {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('statusFilter').value = '';
+  renderTable();
+});
+
+/* ─── INIT ─── */
+loadData();
+setInterval(loadData, 5000);
 
 </script>
 
