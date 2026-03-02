@@ -558,7 +558,7 @@ function formatStatus(status) {
 /* ─── RENDER ─── */
 function renderTable() {
   const query  = document.getElementById('searchInput').value.trim().toLowerCase();
-  const filter = document.getElementById('statusFilter').value.toLowerCase();
+  const filter = document.getElementById('statusFilter').value.trim().toLowerCase();
 
   let rows = allData.filter(item => {
     const matchSearch = !query ||
@@ -566,7 +566,7 @@ function renderTable() {
       (item.department || '').toLowerCase().includes(query) ||
       (item.sl || '').toString().toLowerCase().includes(query);
     const matchFilter = !filter ||
-      (item.status || '').trim().toLowerCase().includes(filter.toLowerCase());
+      (item.status || '').trim().toLowerCase() === filter;
     return matchSearch && matchFilter;
   });
 
