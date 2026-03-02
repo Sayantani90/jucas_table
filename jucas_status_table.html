@@ -484,14 +484,14 @@
     <span class="search-icon">🔍</span>
     <input type="text" id="searchInput" placeholder="Search by name, department…" autocomplete="off">
   </div>
-  <select class="filter-select" id="statusFilter">
-    <option value="">All Statuses</option>
-    <option value="Ongoing">Ongoing</option>
-    <option value="Scrutinized">Scrutinized</option>
-    <option value="Scrutinized (Portal Opened)">Scrutinized (Portal Opened)</option>
-    <option value="Scrutinized (Portal Closed)">Scrutinized (Portal Closed)</option>
-    <option value="Scrutinized & Sent to Registrar">Sent to Registrar</option>
-  </select>
+<select class="filter-select" id="statusFilter">
+  <option value="">All Statuses</option>
+  <option value="ongoing">Ongoing</option>
+  <option value="scrutinized">Scrutinized</option>
+  <option value="portal-open">Scrutinized (Portal Opened)</option>
+  <option value="portal-closed">Scrutinized (Portal Closed)</option>
+  <option value="sent">Sent to Registrar</option>
+</select>
   <button class="btn-clear" id="clearBtn">✕ Clear</button>
   <div class="results-info" id="resultsInfo"></div>
 </div>
@@ -565,10 +565,27 @@ function renderTable() {
       (item.name || '').toLowerCase().includes(query) ||
       (item.department || '').toLowerCase().includes(query) ||
       (item.sl || '').toString().toLowerCase().includes(query);
-    const matchFilter = !filter ||
-      (item.status || '').trim().toLowerCase() === filter;
-    return matchSearch && matchFilter;
-  });
+    const statusText = (item.status || '').trim().toLowerCase();
+
+  let matchFilter = true;
+  
+  if (filter === "ongoing") {
+    matchFilter = statusText.includes("ongoing");
+  }
+  else if (filter === "scrutinized") {
+    matchFilter = statusText === "scrutinized";
+  }
+  else if (filter === "portal-open") {
+    matchFilter = statusText.includes("portal opened");
+  }
+  else if (filter === "portal-closed") {
+    matchFilter = statusText.includes("portal closed");
+  }
+  else if (filter === "sent") {
+    matchFilter = statusText.includes("sent to registrar");
+  }
+      return matchSearch && matchFilter;
+    });
 
   // Sort
   if (sortCol >= 0) {
