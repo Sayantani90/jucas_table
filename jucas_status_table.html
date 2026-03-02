@@ -346,10 +346,16 @@
     flex-shrink: 0;
   }
 
-  .status-sent {
-    background: #e3f2fd; color: #0d47a1; border: 1px solid #90caf9;
-  }
-  .status-sent::before { background: #1565c0; }
+  /* Scrutinized & Sent to Registrar */
+.status-sent {
+  background: #e3f2fd;
+  color: #0d47a1;
+  border: 1px solid #90caf9;
+}
+.status-sent::before {
+  background: #1565c0;
+}
+
 
   .status-portal-open {
     background: #e8f5e9; color: #1b5e20; border: 1px solid #81c784;
@@ -367,9 +373,13 @@
   .status-scrutinized::before { background: #7b1fa2; }
 
   .status-ongoing {
-    background: #fff3e0; color: #e65100; border: 1px solid #ffb74d;
+    background: #fff3e0;
+    color: #e65100;
+    border: 1px solid #ffb74d;
   }
-  .status-ongoing::before { background: #f57c00; animation: pulse 1.8s infinite; }
+  .status-ongoing::before {
+    background: #f57c00;
+  }
 
   .status-default {
     background: #eceff1; color: #37474f; border: 1px solid #cfd8dc;
