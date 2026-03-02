@@ -566,7 +566,7 @@ function renderTable() {
       (item.department || '').toLowerCase().includes(query) ||
       (item.sl || '').toString().toLowerCase().includes(query);
     const matchFilter = !filter ||
-      (item.status || '').trim().toLowerCase() === filter;
+      (item.status || '').trim().toLowerCase().includes(filter.toLowerCase());
     return matchSearch && matchFilter;
   });
 
