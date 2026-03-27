@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QS World University Rankings by Subject</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0d0d0d;
+      --paper: #f5f0e8;
+      --cream: #ede7d9;
+      --gold: #b8902a;
+      --gold-light: #d4aa4a;
+      --red: #c0392b;
+      --green: #1a6b3c;
+      --muted: #7a7060;
+      --rule: #c8b98a;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding: 3rem 1.5rem 5rem;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(184,144,42,0.06) 28px, rgba(184,144,42,0.06) 29px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      text-align: center;
+      border-top: 3px double var(--gold);
+      border-bottom: 3px double var(--gold);
+      padding: 2rem 1rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+
+    .masthead::before, .masthead::after {
+      content: '◆';
+      position: absolute;
+      font-size: 0.7rem;
+      color: var(--gold);
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .masthead::before { left: 1rem; }
+    .masthead::after  { right: 1rem; }
+
+    .edition-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.9rem, 5vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    h1 span {
+      display: block;
+      font-size: 0.42em;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 0.3em;
+    }
+
+    .subtitle {
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-style: italic;
+      letter-spacing: 0.03em;
+    }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 0.2rem;
+    }
+
+    .pill {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      padding: 0.3rem 0.8rem;
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      letter-spacing: 0.05em;
+    }
+
+    .pill:hover, .pill.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--paper);
+    }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      border: 1px solid var(--rule);
+      background: #fffdf8;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--ink);
+    }
+
+    thead th {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--paper);
+      padding: 1rem 1.2rem;
+      text-align: left;
+      font-weight: 500;
+    }
+
+    thead th:last-child { text-align: center; }
+    thead th:nth-child(2), thead th:nth-child(3) { text-align: center; }
+
+    tbody tr {
+      border-bottom: 1px solid var(--cream);
+      transition: background 0.15s ease;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    tbody tr:hover {
+      background: rgba(184,144,42,0.06);
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+
+    td {
+      padding: 0.85rem 1.2rem;
+      font-size: 0.88rem;
+      color: var(--ink);
+      vertical-align: middle;
+    }
+
+    .td-subject {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .td-rank {
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .td-rank.empty {
+      color: var(--muted);
+      font-style: italic;
+      font-size: 0.72rem;
+    }
+
+    .td-trend {
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 500;
+      padding: 0.2rem 0.5rem;
+      border-radius: 1px;
+      letter-spacing: 0.04em;
+    }
+
+    .badge.up    { background: rgba(26,107,60,0.12); color: var(--green); }
+    .badge.down  { background: rgba(192,57,43,0.12); color: var(--red); }
+    .badge.same  { background: rgba(120,112,96,0.1); color: var(--muted); }
+    .badge.new   { background: rgba(184,144,42,0.15); color: var(--gold); }
+
+    /* ── FOOTER RULE ── */
+    .footer {
+      margin-top: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .footer-line {
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    .footer-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* ── ROW COUNT ── */
+    .row-count {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      margin-bottom: 0.6rem;
+    }
+
+    #count { color: var(--gold); font-weight: 500; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hidden { display: none; }
+
+    /* ── SEARCH ── */
+    .search-wrap {
+      position: relative;
+      margin-left: auto;
+    }
+
+    .search-wrap input {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.35rem 0.9rem 0.35rem 2rem;
+      border: 1px solid var(--rule);
+      background: #fffdf8;
+      color: var(--ink);
+      outline: none;
+      border-radius: 2px;
+      width: 180px;
+      letter-spacing: 0.04em;
+    }
+
+    .search-wrap input:focus {
+      border-color: var(--gold);
+    }
+
+    .search-wrap::before {
+      content: '⌕';
+      position: absolute;
+      left: 0.55rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      color: var(--muted);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div class="edition-tag">QS World University Rankings</div>
+    <h1>Rankings by Subject
+      <span>2026 Edition</span>
+    </h1>
+    <p class="subtitle">Jadavpur University · Subject-Level Performance Analysis</p>
+  </header>
+
+  <!-- CONTROLS -->
+  <div class="filter-bar">
+    <span class="filter-label">Show:</span>
+    <button class="pill active" onclick="filter('all', this)">All</button>
+    <button class="pill" onclick="filter('up', this)">↑ Improved</button>
+    <button class="pill" onclick="filter('down', this)">↓ Declined</button>
+    <button class="pill" onclick="filter('same', this)">→ Stable</button>
+    <button class="pill" onclick="filter('new', this)">★ New Entry</button>
+    <div class="search-wrap">
+      <input type="text" id="searchBox" placeholder="Search subject…" oninput="search()" />
+    </div>
+  </div>
+
+  <div class="row-count">Showing <span id="count">16</span> of 16 subjects</div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <table id="rankTable">
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>2026 Ranking</th>
+          <th>2025 Ranking</th>
+          <th>Trend</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-line"></div>
+    <div class="footer-text">Source: QS World University Rankings by Subject 2026</div>
+    <div class="footer-line"></div>
+  </div>
+
+</div>
+
+<script>
+  const data = [
+    { subject: "English Language and Literature",     r2026: "151–200",  r2025: "201–250" },
+    { subject: "Philosophy",                          r2026: "201–225",  r2025: null       },
+    { subject: "Linguistics",                         r2026: "301–350",  r2025: null       },
+    { subject: "Engineering – Chemical",              r2026: "301–350",  r2025: "301–350" },
+    { subject: "Engineering – Mechanical",            r2026: "301–350",  r2025: "351–400" },
+    { subject: "Pharmacy and Pharmacology",           r2026: "301–350",  r2025: "301–350" },
+    { subject: "Politics",                            r2026: "301–400",  r2025: null       },
+    { subject: "Physics and Astronomy",               r2026: "351–400",  r2025: "401–450" },
+    { subject: "Engineering – Electrical & Electronic", r2026: "351–400", r2025: "401–450" },
+    { subject: "Materials Sciences",                  r2026: "351–400",  r2025: "351–400" },
+    { subject: "Chemistry",                           r2026: "401–450",  r2025: "351–400" },
+    { subject: "Computer Science & Info. Systems",    r2026: "401–450",  r2025: "451–500" },
+    { subject: "Mathematics",                         r2026: "401–450",  r2025: "451–500" },
+    { subject: "Economics and Econometrics",          r2026: "401–450",  r2025: "451–500" },
+    { subject: "Engineering and Technology",          r2026: "451–500",  r2025: "451–500" },
+    { subject: "Natural Sciences",                    r2026: "451–500",  r2025: "451–500" },
+  ];
+
+  function rankLow(r) {
+    if (!r) return Infinity;
+    return parseInt(r.split(/[–\-]/)[0]);
+  }
+
+  function getTrend(d) {
+    if (!d.r2025) return 'new';
+    const prev = rankLow(d.r2025), curr = rankLow(d.r2026);
+    if (curr < prev)  return 'up';
+    if (curr > prev)  return 'down';
+    return 'same';
+  }
+
+  const trendLabel = { up: '↑ Improved', down: '↓ Declined', same: '→ Stable', new: '★ New Entry' };
+
+  let currentFilter = 'all';
+  let currentSearch = '';
+
+  function renderRows() {
+    const tbody = document.getElementById('tbody');
+    tbody.innerHTML = '';
+    let count = 0;
+
+    data.forEach((d, i) => {
+      const trend = getTrend(d);
+      const matchFilter = currentFilter === 'all' || trend === currentFilter;
+      const matchSearch = d.subject.toLowerCase().includes(currentSearch.toLowerCase());
+      if (!matchFilter || !matchSearch) return;
+      count++;
+
+      const tr = document.createElement('tr');
+      tr.style.animationDelay = `${count * 0.04}s`;
+      tr.dataset.trend = trend;
+
+      tr.innerHTML = `
+        <td class="td-subject">${d.subject}</td>
+        <td class="td-rank">${d.r2026}</td>
+        <td class="td-rank ${d.r2025 ? '' : 'empty'}">${d.r2025 || 'Not ranked'}</td>
+        <td class="td-trend"><span class="badge ${trend}">${trendLabel[trend]}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('count').textContent = count;
+  }
+
+  function filter(type, btn) {
+    currentFilter = type;
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    renderRows();
+  }
+
+  function search() {
+    currentSearch = document.getElementById('searchBox').value;
+    renderRows();
+  }
+
+  renderRows();
+</script>
+</body>
+</html>
