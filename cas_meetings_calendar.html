@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CAS Meetings — Calendar View</title>
+<style>
+  :root {
+    --primary: #1b3a6b;
+    --primary-light: #2c5aa0;
+    --accent: #c9a24b;
+    --border: #dbe3ee;
+    --text: #26313f;
+    --muted: #9aa7b8;
+    --danger: #c0524a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #eef1f6;
+    color: var(--text);
+    margin: 0;
+    padding: 40px 20px;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  .header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: #fff;
+    padding: 28px 32px;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 6px 24px rgba(27,58,107,0.12);
+  }
+  .header h1 { margin: 0; font-size: 24px; letter-spacing: 0.3px; }
+  .header p { margin: 6px 0 0; font-size: 14px; opacity: 0.85; }
+
+  .toolbar {
+    background: #fff;
+    padding: 18px 32px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--muted); font-weight: 600; }
+  .field input {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 10px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: inherit;
+  }
+  .field input:focus { outline: none; border-color: var(--primary-light); }
+  #meetingLabelInput { width: 100px; }
+  #meetingDateInput { width: 160px; }
+  button.primary-btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button.primary-btn:hover { background: var(--primary-light); }
+  button.ghost-btn {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  button.ghost-btn:hover { border-color: var(--primary-light); color: var(--primary); }
+  #statusMsg { font-size: 13px; color: var(--primary); align-self: center; }
+
+  .grid {
+    background: #fff;
+    padding: 28px;
+    border-radius: 0 0 10px 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    box-shadow: 0 6px 24px rgba(27,58,107,0.08);
+  }
+  .month-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    background: #fafbfd;
+  }
+  .month-title {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+  }
+  .day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--text);
+    border-radius: 4px;
+    position: relative;
+  }
+  .day.empty { visibility: hidden; }
+  .day.meeting {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    flex-direction: column;
+    line-height: 1.1;
+    cursor: pointer;
+  }
+  .day.meeting:hover { background: var(--danger); }
+  .day.meeting .daynum { font-size: 12px; }
+  .day.meeting .mlabel { font-size: 7px; font-weight: 600; opacity: 0.95; }
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 32px 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .legend .swatch {
+    width: 14px; height: 14px; border-radius: 3px; background: var(--accent); display: inline-block;
+  }
+  .footer {
+    text-align: right;
+    font-size: 12px;
+    color: #8592a3;
+    padding: 12px 32px 0;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>CAS Meetings — Calendar View</h1>
+    <p>Career Advancement Scheme (CAS) meetings plotted across the academic timeline</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="field">
+      <label for="meetingLabelInput">Meeting No.</label>
+      <input type="text" id="meetingLabelInput" placeholder="e.g. 25th">
+    </div>
+    <div class="field">
+      <label for="meetingDateInput">Date</label>
+      <input type="date" id="meetingDateInput">
+    </div>
+    <button class="primary-btn" onclick="addMeeting()">+ Add Meeting</button>
+    <button class="ghost-btn" onclick="downloadBackup()">Download backup (.json)</button>
+    <span id="statusMsg"></span>
+  </div>
+
+  <div class="legend"><span class="swatch"></span> Highlighted date = CAS meeting held &nbsp;•&nbsp; click a highlighted date to remove it</div>
+  <div class="grid" id="calendarGrid"></div>
+  <div class="footer" id="footerNote"></div>
+</div>
+
+<script>
+/* Starting data — only used the very first time this file is opened.
+   After that, everything you add is saved in your browser automatically. */
+const DEFAULT_MEETINGS = [
+  { label: "1st",  date: "2025-04-30" },
+  { label: "2nd",  date: "2025-05-07" },
+  { label: "3rd",  date: "2025-05-21" },
+  { label: "4th",  date: "2025-06-18" },
+  { label: "5th",  date: "2025-06-25" },
+  { label: "6th",  date: "2025-07-09" },
+  { label: "7th",  date: "2025-08-06" },
+  { label: "8th",  date: "2025-08-12" },
+  { label: "9th",  date: "2025-09-04" },
+  { label: "10th", date: "2025-10-16" },
+  { label: "11th", date: "2025-11-27" },
+  { label: "12th", date: "2025-12-11" },
+  { label: "13th", date: "2025-12-19" },
+  { label: "14th", date: "2026-01-07" },
+  { label: "15th", date: "2026-01-16" },
+  { label: "16th", date: "2026-01-28" },
+  { label: "17th", date: "2026-02-11" },
+  { label: "18th", date: "2026-03-02" },
+  { label: "19th", date: "2026-04-02" },
+  { label: "20th", date: "2026-05-07" },
+  { label: "21st", date: "2026-05-21" },
+  { label: "22nd", date: "2026-06-02" },
+  { label: "23rd", date: "2026-06-23" },
+  { label: "24th", date: "2026-07-03" }
+];
+
+const STORAGE_KEY = "cas_meetings_data_v1";
+const MONTH_NAMES = ["January","February","March","April","May","June",
+  "July","August","September","October","November","December"];
+
+function loadMeetings() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return DEFAULT_MEETINGS.slice();
+}
+
+function saveMeetings(meetings) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(meetings));
+  } catch (e) {
+    showStatus("Could not save — your browser may be blocking local storage.", true);
+  }
+}
+
+let MEETINGS = loadMeetings();
+
+function showStatus(msg, isError) {
+  const el = document.getElementById("statusMsg");
+  el.textContent = msg;
+  el.style.color = isError ? "#c0524a" : "#1b3a6b";
+  setTimeout(() => { el.textContent = ""; }, 3000);
+}
+
+function addMeeting() {
+  const labelInput = document.getElementById("meetingLabelInput");
+  const dateInput = document.getElementById("meetingDateInput");
+  const label = labelInput.value.trim();
+  const date = dateInput.value;
+
+  if (!label || !date) {
+    showStatus("Please enter both a meeting number and a date.", true);
+    return;
+  }
+  if (MEETINGS.some(m => m.date === date)) {
+    showStatus("A meeting is already recorded on that date.", true);
+    return;
+  }
+
+  MEETINGS.push({ label, date });
+  MEETINGS.sort((a, b) => a.date.localeCompare(b.date));
+  saveMeetings(MEETINGS);
+  labelInput.value = "";
+  dateInput.value = "";
+  buildCalendar();
+  showStatus("Meeting added.");
+}
+
+function removeMeeting(date, label) {
+  if (!confirm("Remove the " + label + " meeting (" + date + ")?")) return;
+  MEETINGS = MEETINGS.filter(m => m.date !== date);
+  saveMeetings(MEETINGS);
+  buildCalendar();
+  showStatus("Meeting removed.");
+}
+
+function downloadBackup() {
+  const blob = new Blob([JSON.stringify(MEETINGS, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "cas_meetings_backup.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function buildCalendar() {
+  const byMonth = {};
+  MEETINGS.forEach(m => {
+    const [y, mo, d] = m.date.split("-").map(Number);
+    const key = y + "-" + mo;
+    if (!byMonth[key]) byMonth[key] = { year: y, month: mo, days: {} };
+    byMonth[key].days[d] = { label: m.label, date: m.date };
+  });
+
+  const keys = Object.keys(byMonth).sort((a, b) => {
+    const A = byMonth[a], B = byMonth[b];
+    return A.year - B.year || A.month - B.month;
+  });
+
+  const grid = document.getElementById("calendarGrid");
+  grid.innerHTML = "";
+
+  if (keys.length === 0) {
+    grid.innerHTML = "<p style='color:#9aa7b8;grid-column:1/-1;text-align:center;'>No meetings yet — add one above.</p>";
+    document.getElementById("footerNote").textContent = "Total meetings conducted: 0";
+    return;
+  }
+
+  keys.forEach(key => {
+    const { year, month, days } = byMonth[key];
+    const card = document.createElement("div");
+    card.className = "month-card";
+
+    const title = document.createElement("div");
+    title.className = "month-title";
+    title.textContent = MONTH_NAMES[month - 1] + " " + year;
+    card.appendChild(title);
+
+    const weekdays = document.createElement("div");
+    weekdays.className = "weekdays";
+    ["Mo","Tu","We","Th","Fr","Sa","Su"].forEach(d => {
+      const s = document.createElement("span");
+      s.textContent = d;
+      weekdays.appendChild(s);
+    });
+    card.appendChild(weekdays);
+
+    const daysGrid = document.createElement("div");
+    daysGrid.className = "days-grid";
+
+    const firstDay = new Date(year, month - 1, 1);
+    const startOffset = (firstDay.getDay() + 6) % 7;
+    const daysInMonth = new Date(year, month, 0).getDate();
+
+    for (let i = 0; i < startOffset; i++) {
+      const empty = document.createElement("span");
+      empty.className = "day empty";
+      daysGrid.appendChild(empty);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement("span");
+      if (days[d]) {
+        cell.className = "day meeting";
+        cell.title = "Click to remove " + days[d].label + " meeting";
+        cell.onclick = () => removeMeeting(days[d].date, days[d].label);
+        const num = document.createElement("span");
+        num.className = "daynum";
+        num.textContent = d;
+        const lbl = document.createElement("span");
+        lbl.className = "mlabel";
+        lbl.textContent = days[d].label;
+        cell.appendChild(num);
+        cell.appendChild(lbl);
+      } else {
+        cell.className = "day";
+        cell.textContent = d;
+      }
+      daysGrid.appendChild(cell);
+    }
+
+    card.appendChild(daysGrid);
+    grid.appendChild(card);
+  });
+
+  document.getElementById("footerNote").textContent =
+    "Total meetings conducted: " + MEETINGS.length +
+    " | " + MONTH_NAMES[byMonth[keys[0]].month - 1] + " " + byMonth[keys[0]].year +
+    " – " + MONTH_NAMES[byMonth[keys[keys.length-1]].month - 1] + " " + byMonth[keys[keys.length-1]].year;
+}
+
+buildCalendar();
+</script>
+</body>
+</html>
