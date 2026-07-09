@@ -52,8 +52,9 @@
     font-family: inherit;
   }
   .field input:focus { outline: none; border-color: var(--primary-light); }
-  #meetingLabelInput { width: 100px; }
-  #meetingDateInput { width: 160px; }
+  #meetingLabelInput { width: 90px; }
+  #meetingDateInput { width: 150px; }
+  #meetingApplicantsInput { width: 320px; }
   button.primary-btn {
     background: var(--primary);
     color: #fff;
@@ -171,12 +172,16 @@
       <label for="meetingDateInput">Date</label>
       <input type="date" id="meetingDateInput">
     </div>
+    <div class="field">
+      <label for="meetingApplicantsInput">Applicants (comma-separated)</label>
+      <input type="text" id="meetingApplicantsInput" placeholder="e.g. A Kumar(Physics), B Roy(Chemistry)">
+    </div>
     <button class="primary-btn" onclick="addMeeting()">+ Add Meeting</button>
     <button class="ghost-btn" onclick="downloadBackup()">Download backup (.json)</button>
     <span id="statusMsg"></span>
   </div>
 
-  <div class="legend"><span class="swatch"></span> Highlighted date = CAS meeting held &nbsp;•&nbsp; click a highlighted date to remove it</div>
+  <div class="legend"><span class="swatch"></span> Highlighted date = CAS meeting held &nbsp;•&nbsp; hover to see applicants &nbsp;•&nbsp; click to remove</div>
   <div class="grid" id="calendarGrid"></div>
   <div class="footer" id="footerNote"></div>
 </div>
@@ -185,33 +190,33 @@
 /* Starting data — only used the very first time this file is opened.
    After that, everything you add is saved in your browser automatically. */
 const DEFAULT_MEETINGS = [
-  { label: "1st",  date: "2025-04-30" },
-  { label: "2nd",  date: "2025-05-07" },
-  { label: "3rd",  date: "2025-05-21" },
-  { label: "4th",  date: "2025-06-18" },
-  { label: "5th",  date: "2025-06-25" },
-  { label: "6th",  date: "2025-07-09" },
-  { label: "7th",  date: "2025-08-06" },
-  { label: "8th",  date: "2025-08-12" },
-  { label: "9th",  date: "2025-09-04" },
-  { label: "10th", date: "2025-10-16" },
-  { label: "11th", date: "2025-11-27" },
-  { label: "12th", date: "2025-12-11" },
-  { label: "13th", date: "2025-12-19" },
-  { label: "14th", date: "2026-01-07" },
-  { label: "15th", date: "2026-01-16" },
-  { label: "16th", date: "2026-01-28" },
-  { label: "17th", date: "2026-02-11" },
-  { label: "18th", date: "2026-03-02" },
-  { label: "19th", date: "2026-04-02" },
-  { label: "20th", date: "2026-05-07" },
-  { label: "21st", date: "2026-05-21" },
-  { label: "22nd", date: "2026-06-02" },
-  { label: "23rd", date: "2026-06-23" },
-  { label: "24th", date: "2026-07-03" }
+  { label: "1st",  date: "2025-04-30", applicants: ["Kaushik Mukherjee(Pharma)", "Arpitam Chatterjee(Printing)"] },
+  { label: "2nd",  date: "2025-05-07", applicants: ["Arpitam Chatterjee(Printing)", "Narayan Roy(Civil)", "Anirban Mitra(Mechanical)", "Sachindra Nath Das(Instrumentation Sc)"] },
+  { label: "3rd",  date: "2025-05-21", applicants: ["Parthasarathi Satvaya(SISED)", "Sudeshna Saha(Chemical)", "Pratyusha Rakshit(ETCE)", "Chandan Maity(Physics)"] },
+  { label: "4th",  date: "2025-06-18", applicants: ["Suman Kalyan Das(Mechanical)", "Ankush Majumdar(Civil)"] },
+  { label: "5th",  date: "2025-06-25", applicants: ["Mehabub Rahaman(Chemical)", "Sathi Banerjee(Met&Mat)", "Shilpi Naskar(Printing)"] },
+  { label: "6th",  date: "2025-07-09", applicants: ["Piyali Basak(Sc.BioSc)", "Piyali Basak(Maths)"] },
+  { label: "7th",  date: "2025-08-06", applicants: ["Shilpi Naskar(Printing)", "Susanta Chaudhuri(Geology)"] },
+  { label: "8th",  date: "2025-08-12", applicants: ["Tohida Rehman(IT)", "Sahinur Reja(Physics)", "Rabindranath Gayen(Physics)"] },
+  { label: "9th",  date: "2025-09-04", applicants: ["Satyadeep Waiba(Chemistry)", "Ranu Biswas(Pharmacy)", "Shyamal Roy(Chemical)"] },
+  { label: "10th", date: "2025-10-16", applicants: ["Mita Howladar(Education)", "Sanchita Mondal(Pharmacy)", "Simontini Das(Economics)"] },
+  { label: "11th", date: "2025-11-27", applicants: ["Arup Bhattacharya(IR)", "Vikas Dixit(Economics)"] },
+  { label: "12th", date: "2025-12-11", applicants: ["Rilina Basu(Economics)", "Bhagaban Behera(IR)"] },
+  { label: "13th", date: "2025-12-19", applicants: ["Anupam Ghosh(Geology)", "Dipankar Das(Computer Sc.)", "Soumik Mukhopadhyay(Geology)", "Sadhana M.Chatterjee(Geology)"] },
+  { label: "14th", date: "2026-01-07", applicants: ["Kajal Ghosal(Pharma)", "Debajit Dutta(History)", "Tamal Krishna Kayal(Economics)", "Prasenjit Ghosh(Economics)"] },
+  { label: "15th", date: "2026-01-16", applicants: ["Sridip Chatterjee(Phy.Education)", "Mahasweta Mandal(Printing)", "Mugdha Majumdar(Bengali)"] },
+  { label: "16th", date: "2026-01-28", applicants: ["Sanchita Mondal(Pharma)", "Chinmoy Ghorai(ETCE)", "Shovanlal Gayen(Pharma)"] },
+  { label: "17th", date: "2026-02-11", applicants: ["Amitabha Das(SNSA)", "Chandan Kumar Ghosh(Nano)", "Kaustuv Das(Physics)"] },
+  { label: "18th", date: "2026-03-02", applicants: ["Suddhasatwa Chakraborty(Electrical)", "Chandrima Mondal(ETCE)"] },
+  { label: "19th", date: "2026-04-02", applicants: ["Santosh Kumar Das(Civil)", "Pranibesh Mandal(Mechanical)", "Swagata Paul(Geology)"] },
+  { label: "20th", date: "2026-05-07", applicants: ["Doyeeta Majumder(English)"] },
+  { label: "21st", date: "2026-05-21", applicants: ["Anasua Sarkar(Comp. Sc)", "Chintan Kumar Mandal(Comp. Sc)", "Nabendu Ghosh(Mechanical)"] },
+  { label: "22nd", date: "2026-06-02", applicants: ["Anasua Sarkar(Comp. Sc)", "Nilanjana Deb(English)", "Rahi Soren(SOS)", "Arindam Paul(Economics)"] },
+  { label: "23rd", date: "2026-06-23", applicants: ["Sukhamoy Bhattacharyya(Physics)", "Asim Gopal Barman(Production)"] },
+  { label: "24th", date: "2026-07-03", applicants: ["Utsa Ray(History)", "Probir Kumar Ojha(Pharma)", "Nirmoy Modak(ETCE)", "Broti Gayen(Bengali)"] }
 ];
 
-const STORAGE_KEY = "cas_meetings_data_v1";
+const STORAGE_KEY = "cas_meetings_data_v2";
 const MONTH_NAMES = ["January","February","March","April","May","June",
   "July","August","September","October","November","December"];
 
@@ -243,8 +248,10 @@ function showStatus(msg, isError) {
 function addMeeting() {
   const labelInput = document.getElementById("meetingLabelInput");
   const dateInput = document.getElementById("meetingDateInput");
+  const applicantsInput = document.getElementById("meetingApplicantsInput");
   const label = labelInput.value.trim();
   const date = dateInput.value;
+  const applicants = applicantsInput.value.split(",").map(s => s.trim()).filter(Boolean);
 
   if (!label || !date) {
     showStatus("Please enter both a meeting number and a date.", true);
@@ -255,11 +262,12 @@ function addMeeting() {
     return;
   }
 
-  MEETINGS.push({ label, date });
+  MEETINGS.push({ label, date, applicants });
   MEETINGS.sort((a, b) => a.date.localeCompare(b.date));
   saveMeetings(MEETINGS);
   labelInput.value = "";
   dateInput.value = "";
+  applicantsInput.value = "";
   buildCalendar();
   showStatus("Meeting added.");
 }
@@ -288,7 +296,7 @@ function buildCalendar() {
     const [y, mo, d] = m.date.split("-").map(Number);
     const key = y + "-" + mo;
     if (!byMonth[key]) byMonth[key] = { year: y, month: mo, days: {} };
-    byMonth[key].days[d] = { label: m.label, date: m.date };
+    byMonth[key].days[d] = { label: m.label, date: m.date, applicants: m.applicants || [] };
   });
 
   const keys = Object.keys(byMonth).sort((a, b) => {
@@ -340,15 +348,19 @@ function buildCalendar() {
     for (let d = 1; d <= daysInMonth; d++) {
       const cell = document.createElement("span");
       if (days[d]) {
+        const info = days[d];
         cell.className = "day meeting";
-        cell.title = "Click to remove " + days[d].label + " meeting";
-        cell.onclick = () => removeMeeting(days[d].date, days[d].label);
+        const applicantsText = info.applicants.length
+          ? info.applicants.join(", ")
+          : "No applicants recorded";
+        cell.title = info.label + " Meeting — " + info.date + "\n" + applicantsText + "\n(click to remove)";
+        cell.onclick = () => removeMeeting(info.date, info.label);
         const num = document.createElement("span");
         num.className = "daynum";
         num.textContent = d;
         const lbl = document.createElement("span");
         lbl.className = "mlabel";
-        lbl.textContent = days[d].label;
+        lbl.textContent = info.label;
         cell.appendChild(num);
         cell.appendChild(lbl);
       } else {
