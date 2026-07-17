@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>IQAC CAS Status Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+ 
 <style>
   :root {
     --navy: #0f2557;
@@ -20,9 +20,9 @@
     --shadow: 0 2px 12px rgba(15,37,87,0.09);
     --shadow-lg: 0 6px 32px rgba(15,37,87,0.13);
   }
-
+ 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
   body {
     font-family: 'IBM Plex Sans', sans-serif;
     background: var(--bg);
@@ -30,7 +30,7 @@
     min-height: 100vh;
     padding: 0 0 40px;
   }
-
+ 
   /* ─── HEADER ─── */
   .header {
     background: linear-gradient(135deg, var(--navy) 0%, #1a3a7a 60%, #2a5298 100%);
@@ -143,7 +143,7 @@
   .stat-card.ongoing { border-color: #e65100; }
   .stat-card.scrutinized { border-color: #6a1b9a; }
   .stat-card.sent    { border-color: #0d47a1; }
-
+ 
   .stat-label {
     font-size: 11px;
     font-weight: 600;
@@ -161,7 +161,7 @@
   .stat-card.ongoing .stat-value { color: #e65100; }
   .stat-card.scrutinized .stat-value { color: #6a1b9a; }
   .stat-card.sent    .stat-value { color: #0d47a1; }
-
+ 
   /* ─── CONTROLS ─── */
   .controls-wrap {
     max-width: 1200px;
@@ -200,7 +200,7 @@
     font-size: 15px;
     pointer-events: none;
   }
-
+ 
   .filter-select {
     padding: 10px 36px 10px 14px;
     border: 1.5px solid var(--border);
@@ -219,7 +219,7 @@
     min-width: 190px;
   }
   .filter-select:focus { border-color: var(--navy-mid); }
-
+ 
   .btn-clear {
     padding: 10px 16px;
     border: 1.5px solid var(--border);
@@ -237,7 +237,7 @@
     border-color: var(--navy-mid);
     color: var(--navy-mid);
   }
-
+ 
   .results-info {
     font-size: 13px;
     color: var(--text-muted);
@@ -245,7 +245,7 @@
     white-space: nowrap;
     font-family: 'IBM Plex Mono', monospace;
   }
-
+ 
   /* ─── TABLE ─── */
   .table-wrap {
     max-width: 1200px;
@@ -258,13 +258,14 @@
     box-shadow: var(--shadow);
     overflow: hidden;
     border: 1px solid var(--border);
+    overflow-x: auto;
   }
-
+ 
   table {
     width: 100%;
     border-collapse: collapse;
   }
-
+ 
   thead tr {
     background: var(--navy);
   }
@@ -279,6 +280,7 @@
     border: none;
     position: relative;
     user-select: none;
+    white-space: nowrap;
   }
   th:first-child { padding-left: 20px; text-align: center; }
   th.sortable { cursor: pointer; }
@@ -294,7 +296,7 @@
   th.sort-asc .sort-icon::after  { content: '▲'; opacity: 1; }
   th.sort-desc .sort-icon::after { content: '▼'; opacity: 1; }
   th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: '⇅'; }
-
+ 
   td {
     padding: 12px 14px;
     border: none;
@@ -317,16 +319,22 @@
   }
   td:nth-child(3) { font-weight: 600; color: var(--navy); }
   td:nth-child(4) { color: var(--text-muted); font-size: 13px; }
-  td:last-child {
+  td:nth-child(6) {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
     color: var(--text-muted);
   }
-
+  td:nth-child(7) {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--navy-mid);
+    font-weight: 600;
+  }
+ 
   tbody tr { transition: background 0.12s; }
   tbody tr:hover { background: #f5f8ff; }
   tbody tr:last-child td { border-bottom: none; }
-
+ 
   /* ─── STATUS BADGES ─── */
   .status-badge {
     display: inline-flex;
@@ -345,7 +353,7 @@
     border-radius: 50%;
     flex-shrink: 0;
   }
-
+ 
   /* Scrutinized & Sent to Registrar */
 .status-sent {
   background: #e3f2fd;
@@ -355,23 +363,23 @@
 .status-sent::before {
   background: #1565c0;
 }
-
-
+ 
+ 
   .status-portal-open {
     background: #e8f5e9; color: #1b5e20; border: 1px solid #81c784;
   }
   .status-portal-open::before { background: #2e7d32; }
-
+ 
   .status-portal-closed {
     background: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a;
   }
   .status-portal-closed::before { background: #c62828; }
-
+ 
   .status-scrutinized {
     background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8;
   }
   .status-scrutinized::before { background: #7b1fa2; }
-
+ 
   .status-ongoing {
     background: #fff3e0;
     color: #e65100;
@@ -380,17 +388,17 @@
   .status-ongoing::before {
     background: #f57c00;
   }
-
+ 
   .status-default {
     color: #37474f; border: 1px solid #cfd8dc;
   }
   .status-default::before { background: #607d8b; }
-
+ 
   @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.3; }
   }
-
+ 
   /* ─── EMPTY STATE ─── */
   .empty-row td {
     text-align: center;
@@ -399,7 +407,7 @@
     font-style: italic;
     font-size: 14px;
   }
-
+ 
   /* ─── FOOTER ─── */
   .footer {
     max-width: 1200px;
@@ -418,7 +426,7 @@
     background: #2e7d32;
     animation: pulse 2s infinite;
   }
-
+ 
   /* ─── LOADING ─── */
   .loading-overlay {
     display: none;
@@ -438,7 +446,7 @@
     animation: spin 0.7s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-
+ 
   @media (max-width: 768px) {
     .header { padding: 24px 20px 20px; }
     .stats-bar, .controls-wrap, .table-wrap, .footer { padding: 0 16px; }
@@ -448,9 +456,9 @@
   }
 </style>
 </head>
-
+ 
 <body>
-
+ 
 <!-- HEADER -->
 <div class="header">
   <div class="header-inner">
@@ -467,7 +475,7 @@
     </a>
   </div>
 </div>
-
+ 
 <!-- STATS -->
 <div class="stats-bar">
   <div class="stat-card total">
@@ -487,7 +495,7 @@
     <div class="stat-value" id="sentCount">—</div>
   </div>
 </div>
-
+ 
 <!-- CONTROLS -->
 <div class="controls-wrap">
   <div class="search-box">
@@ -505,7 +513,7 @@
   <button class="btn-clear" id="clearBtn">✕ Clear</button>
   <div class="results-info" id="resultsInfo"></div>
 </div>
-
+ 
 <!-- TABLE -->
 <div class="table-wrap">
   <div class="table-card">
@@ -518,33 +526,34 @@
           <th class="sortable" data-col="3">Department <span class="sort-icon"></span></th>
           <th class="sortable" data-col="4">Status <span class="sort-icon"></span></th>
           <th class="sortable" data-col="5">Date of Update <span class="sort-icon"></span></th>
+          <th class="sortable" data-col="6">Promotion Eligibility <span class="sort-icon"></span></th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
   </div>
 </div>
-
+ 
 <!-- FOOTER -->
 <div class="footer">
   <div class="footer-dot"></div>
   Last auto-updated: <span id="lastUpdated">—</span>
-  &nbsp;·&nbsp; Refreshes every 20s
+  &nbsp;•&nbsp; Refreshes every 20s
 </div>
-
+ 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
 </div>
-
+ 
 <script>
 
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzcb3SnesxhcJmVt82IS6yiBxt_JFfAc5Sx0_p1pqcyAbyq2xXspEapU5kqDCe1BTWNWQ/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwoJKjQGXUKTwKskHpIENNwS_o8b2HrxBbZPdJxsnBVx84TkHwh6PBg87M68o8u3zBPZA/exec";
 
 /* ─── STATE ─── */
 let allData = [];
 let sortCol = -1;
 let sortDir = 'asc';
-
+ 
 /* ─── STATUS FORMATTER ─── */
 function formatStatus(status) {
   if (!status) return "-";
@@ -564,19 +573,19 @@ function formatStatus(status) {
       return `<span class="status-badge status-default">${text}</span>`;
   }
 }
-
+ 
 /* ─── RENDER ─── */
 function renderTable() {
   const query  = document.getElementById('searchInput').value.trim().toLowerCase();
   const filter = document.getElementById('statusFilter').value.trim().toLowerCase();
-
+ 
   let rows = allData.filter(item => {
     const matchSearch = !query ||
       (item.name || '').toLowerCase().includes(query) ||
       (item.department || '').toLowerCase().includes(query) ||
       (item.sl || '').toString().toLowerCase().includes(query);
     const statusText = (item.status || '').trim().toLowerCase();
-
+ 
   let matchFilter = true;
   
   if (filter === "ongoing") {
@@ -596,10 +605,10 @@ function renderTable() {
   }
       return matchSearch && matchFilter;
     });
-
+ 
   // Sort
   if (sortCol >= 0) {
-    const keys = ['sl','dateReceived','name','department','status','updateDate'];
+    const keys = ['sl','dateReceived','name','department','status','updateDate','promotionEligibility'];
     const key = keys[sortCol];
     rows.sort((a, b) => {
       const va = (a[key] || '').toString().toLowerCase();
@@ -607,12 +616,12 @@ function renderTable() {
       return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
     });
   }
-
+ 
   const tbody = document.querySelector("#sheetTable tbody");
   tbody.innerHTML = "";
-
+ 
   if (rows.length === 0) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">No matching applications found.</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">No matching applications found.</td></tr>`;
   } else {
     rows.forEach(item => {
       const tr = document.createElement("tr");
@@ -623,17 +632,18 @@ function renderTable() {
         <td>${item.department || ""}</td>
         <td>${formatStatus(item.status)}</td>
         <td>${item.updateDate || "-"}</td>
+        <td>${item.promotionEligibility || "-"}</td>
       `;
       tbody.appendChild(tr);
     });
   }
-
+ 
   document.getElementById('resultsInfo').textContent =
     rows.length === allData.length
       ? `${allData.length} applications`
       : `${rows.length} of ${allData.length} shown`;
 }
-
+ 
 /* ─── UPDATE COUNTERS ─── */
 function updateCounters() {
   let total = 0, ongoing = 0, scrutinized = 0, sent = 0;
@@ -649,7 +659,7 @@ function updateCounters() {
   document.getElementById("scrutinizedCount").textContent = scrutinized;
   document.getElementById("sentCount").textContent = sent;
 }
-
+ 
 /* ─── LOAD DATA ─── */
 let firstLoad = true;
 function loadData() {
@@ -669,7 +679,7 @@ function loadData() {
       document.getElementById('loadingOverlay').classList.remove('active');
     });
 }
-
+ 
 /* ─── SORT ─── */
 document.querySelectorAll('th.sortable').forEach(th => {
   th.addEventListener('click', () => {
@@ -687,7 +697,7 @@ document.querySelectorAll('th.sortable').forEach(th => {
     renderTable();
   });
 });
-
+ 
 /* ─── SEARCH / FILTER ─── */
 document.getElementById('searchInput').addEventListener('input', renderTable);
 document.getElementById('statusFilter').addEventListener('change', renderTable);
@@ -696,12 +706,12 @@ document.getElementById('clearBtn').addEventListener('click', () => {
   document.getElementById('statusFilter').value = '';
   renderTable();
 });
-
+ 
 /* ─── INIT ─── */
 loadData();
 setInterval(loadData, 5000);
-
+ 
 </script>
-
+ 
 </body>
 </html>
