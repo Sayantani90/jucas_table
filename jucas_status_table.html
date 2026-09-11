@@ -580,6 +580,9 @@ let sortDir = 'asc';
 function formatStatus(status) {
   if (!status) return "-";
   const text = status.trim();
+  if (text.includes("Ongoing")) {
+    return `<span class="status-badge status-ongoing">${text}</span>`;
+  }
   switch (text) {
     case "Sent to Registrar":
       return `<span class="status-badge status-sent">${text}</span>`;
@@ -589,8 +592,6 @@ function formatStatus(status) {
       return `<span class="status-badge status-portal-closed">${text}</span>`;
     case "Scrutinized":
       return `<span class="status-badge status-scrutinized">${text}</span>`;
-    case "Processing Ongoing":
-      return `<span class="status-badge status-ongoing">${text}</span>`;
     default:
       return `<span class="status-badge status-default">${text}</span>`;
   }
