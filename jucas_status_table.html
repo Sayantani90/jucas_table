@@ -259,10 +259,17 @@
     overflow: hidden;
     border: 1px solid var(--border);
     overflow-x: auto;
+    position: relative;
   }
+  /* visible scrollbar so it's obvious there's more to see */
+  .table-card::-webkit-scrollbar { height: 8px; }
+  .table-card::-webkit-scrollbar-track { background: var(--navy-light); }
+  .table-card::-webkit-scrollbar-thumb { background: var(--navy-mid); border-radius: 4px; }
+  .table-card { scrollbar-width: thin; scrollbar-color: var(--navy-mid) var(--navy-light); }
  
   table {
     width: 100%;
+    min-width: 980px;
     border-collapse: collapse;
   }
  
@@ -270,7 +277,7 @@
     background: var(--navy);
   }
   th {
-    padding: 13px 14px;
+    padding: 13px 10px;
     color: rgba(255,255,255,0.92);
     font-size: 12px;
     font-weight: 600;
@@ -298,7 +305,7 @@
   th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: '⇅'; }
  
   td {
-    padding: 12px 14px;
+    padding: 12px 10px;
     border: none;
     border-bottom: 1px solid var(--border);
     font-size: 14px;
@@ -446,6 +453,18 @@
     animation: spin 0.7s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  .scroll-hint {
+    display: none;
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.3px;
+    margin-bottom: 6px;
+    animation: pulse 2.2s infinite;
+  }
+  .scroll-hint.visible { display: block; }
  
   @media (max-width: 768px) {
     .header { padding: 24px 20px 20px; }
@@ -516,7 +535,8 @@
  
 <!-- TABLE -->
 <div class="table-wrap">
-  <div class="table-card">
+  <div class="scroll-hint" id="scrollHint">⇠ scroll for more ⇢</div>
+  <div class="table-card" id="tableCard">
     <table id="sheetTable">
       <thead>
         <tr>
@@ -676,6 +696,7 @@ function loadData() {
       document.getElementById("lastUpdated").textContent = new Date().toLocaleString();
       document.getElementById('loadingOverlay').classList.remove('active');
       firstLoad = false;
+      updateScrollHint();
     })
     .catch(error => {
       console.error("Error loading data:", error);
@@ -710,9 +731,28 @@ document.getElementById('clearBtn').addEventListener('click', () => {
   renderTable();
 });
  
+/* ─── SCROLL HINT ─── */
+function updateScrollHint() {
+  const card = document.getElementById('tableCard');
+  const hint = document.getElementById('scrollHint');
+  if (card.scrollWidth > card.clientWidth + 2) {
+    hint.classList.add('visible');
+  } else {
+    hint.classList.remove('visible');
+  }
+}
+window.addEventListener('resize', updateScrollHint);
+document.getElementById('tableCard').addEventListener('scroll', () => {
+  const card = document.getElementById('tableCard');
+  const hint = document.getElementById('scrollHint');
+  const atEnd = card.scrollLeft + card.clientWidth >= card.scrollWidth - 2;
+  hint.style.opacity = atEnd ? '0' : '1';
+});
+
 /* ─── INIT ─── */
 loadData();
 setInterval(loadData, 5000);
+setTimeout(updateScrollHint, 300);
  
 </script>
  
