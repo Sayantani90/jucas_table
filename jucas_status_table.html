@@ -520,13 +520,15 @@
     <table id="sheetTable">
       <thead>
         <tr>
-          <th>Sl No</th>
-          <th class="sortable" data-col="1">Date Received <span class="sort-icon"></span></th>
-          <th class="sortable" data-col="2">Name <span class="sort-icon"></span></th>
-          <th class="sortable" data-col="3">Department <span class="sort-icon"></span></th>
-          <th class="sortable" data-col="4">Status <span class="sort-icon"></span></th>
-          <th class="sortable" data-col="5">Date of Update <span class="sort-icon"></span></th>
-          <th class="sortable" data-col="6">Promotion Eligibility <span class="sort-icon"></span></th>
+          <th class="sortable" data-col="1">Sl No</th>
+          <th class="sortable" data-col="2">Date Received <span class="sort-icon"></span></th>
+          <th class="sortable" data-col="3">Name <span class="sort-icon"></span></th>
+          <th class="sortable" data-col="4">Department <span class="sort-icon"></span></th>
+          <th class="sortable" data-col="5">Designation <span class="sort-icon"></span></th>
+          <th class="sortable" data-col="6">Status <span class="sort-icon"></span></th>
+          <th class="sortable" data-col="7">Date of Update <span class="sort-icon"></span></th>
+          <th class="sortable" data-col="8">Promotion Eligibility <span class="sort-icon"></span></th>
+         
         </tr>
       </thead>
       <tbody></tbody>
@@ -608,7 +610,7 @@ function renderTable() {
  
   // Sort
   if (sortCol >= 0) {
-    const keys = ['sl','dateReceived','name','department','status','updateDate','promotionEligibility'];
+    const keys = ['sl','dateReceived','name','department','designation','status','updateDate','promotionEligibility'];
     const key = keys[sortCol];
     rows.sort((a, b) => {
       const va = (a[key] || '').toString().toLowerCase();
@@ -621,7 +623,7 @@ function renderTable() {
   tbody.innerHTML = "";
  
   if (rows.length === 0) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">No matching applications found.</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No matching applications found.</td></tr>`;
   } else {
     rows.forEach(item => {
       const tr = document.createElement("tr");
@@ -630,6 +632,7 @@ function renderTable() {
         <td>${item.dateReceived || ""}</td>
         <td>${item.name || ""}</td>
         <td>${item.department || ""}</td>
+        <td>${item.designation || ""}</td>
         <td>${formatStatus(item.status)}</td>
         <td>${item.updateDate || "-"}</td>
         <td>${item.promotionEligibility || "-"}</td>
