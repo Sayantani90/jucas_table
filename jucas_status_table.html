@@ -581,7 +581,7 @@ function formatStatus(status) {
   if (!status) return "-";
   const text = status.trim();
   switch (text) {
-    case "Scrutinized & Sent to Registrar":
+    case "Sent to Registrar":
       return `<span class="status-badge status-sent">${text}</span>`;
     case "Scrutinized (Portal Opened)":
       return `<span class="status-badge status-portal-open">${text}</span>`;
@@ -589,7 +589,7 @@ function formatStatus(status) {
       return `<span class="status-badge status-portal-closed">${text}</span>`;
     case "Scrutinized":
       return `<span class="status-badge status-scrutinized">${text}</span>`;
-    case "Ongoing":
+    case "Processing Ongoing":
       return `<span class="status-badge status-ongoing">${text}</span>`;
     default:
       return `<span class="status-badge status-default">${text}</span>`;
